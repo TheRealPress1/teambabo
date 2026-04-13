@@ -2,14 +2,16 @@ import React, { useState, useRef } from 'react'
 import { FORMATIONS, FORMATION_KEYS } from '../lib/formations'
 
 export default function LineupBuilder({
-  event,
+  event = null,
   members = [],
   lineup = null,
   isAdmin = false,
   onSave,
+  onDelete,
   onClose,
 }) {
   const [formation, setFormation] = useState(lineup?.formation || '4-4-2')
+  const [name, setName] = useState(lineup?.name || '')
   const [slots, setSlots] = useState(() => {
     if (lineup?.slots) return lineup.slots
     return FORMATIONS[formation].positions.map(p => ({
@@ -23,6 +25,7 @@ export default function LineupBuilder({
   const [saving, setSaving] = useState(false)
   const [draggedMember, setDraggedMember] = useState(null)
   const fieldRef = useRef(null)
+  const isTemplate = !event
 
   const assignedMemberIds = slots.filter(s => s.memberId).map(s => s.memberId)
   const availablePlayers = members.filter(m => !assignedMemberIds.includes(m.id))
@@ -65,7 +68,9 @@ export default function LineupBuilder({
   const handleSave = async (publishStatus) => {
     setSaving(true)
     await onSave({
-      event_id: event.id,
+      id: lineup?.id,
+      event_id: event?.id || null,
+      name: isTemplate ? name : null,
       formation,
       slots,
       status: publishStatus,
@@ -76,10 +81,13 @@ export default function LineupBuilder({
   const getMember = (id) => members.find(m => m.id === id)
 
   // Title
-  let eventTitle = event.title
-  if (event.type?.toLowerCase() === 'game' && event.opponent) {
-    const prefix = event.home_away === 'home' ? 'vs' : '@'
-    eventTitle = `${prefix} ${event.opponent}`
+  let eventTitle = ''
+  if (event) {
+    eventTitle = event.title
+    if (event.type?.toLowerCase() === 'game' && event.opponent) {
+      const prefix = event.home_away === 'home' ? 'vs' : '@'
+      eventTitle = `${prefix} ${event.opponent}`
+    }
   }
 
   const readOnly = !isAdmin
@@ -94,9 +102,21 @@ export default function LineupBuilder({
         >
           {/* Header */}
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Lineup</h2>
-              <p className="text-sm text-gray-500 mt-0.5">{eventTitle}</p>
+            <div className="flex-1 mr-4">
+              {isTemplate && !readOnly ? (
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Lineup name (e.g. Main XI, B Team)"
+                  className="text-xl font-bold text-gray-900 bg-transparent border-none outline-none w-full placeholder-gray-300"
+                />
+              ) : (
+                <>
+                  <h2 className="text-xl font-bold text-gray-900">{isTemplate ? (name || 'Untitled Lineup') : 'Lineup'}</h2>
+                  {eventTitle && <p className="text-sm text-gray-500 mt-0.5">{eventTitle}</p>}
+                </>
+              )}
             </div>
             <div className="flex items-center gap-3">
               {lineup?.status === 'published' && (
@@ -277,12 +297,22 @@ export default function LineupBuilder({
           {/* Footer */}
           {!readOnly && (
             <div className="border-t border-gray-100 p-4 flex items-center justify-between bg-gray-50 rounded-b-2xl">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Cancel
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Cancel
+                </button>
+                {isTemplate && lineup && onDelete && (
+                  <button
+                    onClick={() => onDelete(lineup.id)}
+                    className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleSave('draft')}

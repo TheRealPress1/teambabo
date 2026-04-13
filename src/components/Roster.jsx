@@ -1,4 +1,4 @@
-export default function Roster({ members = [], me, isAdmin = false, onPromote }) {
+export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup }) {
   const coaches = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
@@ -95,6 +95,54 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote })
       {members.length === 0 && (
         <div className="px-4 py-8 text-center">
           <p className="text-sm text-stone-500">No members yet</p>
+        </div>
+      )}
+
+      {/* Lineups Section */}
+      {isAdmin && (
+        <div className="border-t border-stone-100">
+          <div className="px-4 py-4 bg-stone-50 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-stone-900">Lineups</h2>
+            <button
+              onClick={onCreateLineup}
+              className="w-8 h-8 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center transition-colors text-lg font-bold"
+              title="Create lineup"
+            >
+              +
+            </button>
+          </div>
+          {templateLineups.length === 0 ? (
+            <div className="px-4 py-6 text-center">
+              <p className="text-sm text-stone-400">No saved lineups yet</p>
+            </div>
+          ) : (
+            <div>
+              {templateLineups.map(l => (
+                <button
+                  key={l.id}
+                  onClick={() => onEditLineup(l)}
+                  className="w-full flex items-center justify-between px-4 py-3 border-b border-stone-100 hover:bg-stone-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-xs font-bold text-green-700">
+                      {l.formation}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-stone-900">{l.name || 'Untitled'}</div>
+                      <div className="text-xs text-stone-500">
+                        {l.slots?.filter(s => s.memberId).length || 0}/11 players
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    l.status === 'draft' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
+                  }`}>
+                    {l.status}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
