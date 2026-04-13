@@ -139,7 +139,7 @@ export default function LineupBuilder({
 
           <div className="flex flex-col md:flex-row">
             {/* Left sidebar: Players & Formation */}
-            <div className="md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 p-4 space-y-4">
+            <div className="md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 p-4 space-y-4 md:max-h-[70vh] md:overflow-y-auto">
               {/* Formation picker */}
               {!readOnly && (
                 <div>
@@ -174,7 +174,7 @@ export default function LineupBuilder({
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">
                     Players ({availablePlayers.length})
                   </label>
-                  <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                  <div className="space-y-1">
                     {availablePlayers.map(m => (
                       <div
                         key={m.id}
@@ -226,7 +226,7 @@ export default function LineupBuilder({
                 ref={fieldRef}
                 className="relative w-full rounded-xl overflow-hidden"
                 style={{
-                  aspectRatio: '68 / 105',
+                  aspectRatio: '3 / 4',
                   background: 'linear-gradient(to bottom, #2d8a4e, #34a853, #2d8a4e)',
                 }}
               >
