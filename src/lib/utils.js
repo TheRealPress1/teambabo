@@ -30,7 +30,7 @@ export function isToday(d) {
 }
 
 export function openGoogleCalendar(ev) {
-  const title = ev.type === 'Game'
+  const title = ev.type?.toLowerCase() === 'game'
     ? `${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
     : ev.title
 
@@ -56,7 +56,7 @@ export function openGoogleCalendar(ev) {
 }
 
 export function openOutlookCalendar(ev) {
-  const title = ev.type === 'Game'
+  const title = ev.type?.toLowerCase() === 'game'
     ? `${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
     : ev.title
 
