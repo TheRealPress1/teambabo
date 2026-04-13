@@ -143,6 +143,8 @@ export default function App() {
             goals={team.goals}
             rsvps={team.rsvps}
             members={team.members}
+            isAdmin={team.isAdmin}
+            onSaveResult={team.saveResult}
           />
         )}
       </main>
