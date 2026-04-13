@@ -33,101 +33,71 @@ export default function EditProfile({ myInfo, onSave, onLogout, onClose }) {
     onClose()
   }
 
-  const inputStyle = {
-    width: '100%',
-    padding: '10px 14px',
-    borderRadius: '6px',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    color: '#f7f8f8',
-    fontSize: '14px',
-    outline: 'none',
-  }
-
-  const labelStyle = {
-    display: 'block',
-    fontSize: '12px',
-    fontWeight: 510,
-    color: '#8a8f98',
-    marginBottom: '6px',
-  }
-
   return (
     <>
       <div
-        className="fixed inset-0 z-50"
-        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
         onClick={onClose}
       />
 
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div
-          className="w-full max-w-sm rounded-xl overflow-hidden"
-          style={{ background: '#0f1011', border: '1px solid rgba(255,255,255,0.08)' }}
+          className="bg-white rounded-2xl shadow-lg w-full max-w-sm max-h-[90vh] overflow-y-auto"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div
-            className="px-5 py-4 flex items-center justify-between"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            <span style={{ fontSize: '15px', fontWeight: 590, color: '#f7f8f8', letterSpacing: '-0.24px' }}>
-              Edit Profile
-            </span>
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-900">Edit Profile</h2>
             <button
               onClick={onClose}
-              style={{ color: '#62666d', fontSize: '18px' }}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              ✕
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-5 space-y-5">
+          <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {/* Avatar */}
             <div className="flex flex-col items-center">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden transition-colors relative"
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '2px solid rgba(255,255,255,0.12)',
-                }}
+                className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden transition-colors relative hover:bg-gray-200"
+                style={{ border: '2px dashed #d1d5db' }}
               >
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span style={{ fontSize: '24px', fontWeight: 590, color: '#62666d' }}>
+                  <span className="text-2xl font-bold text-gray-400">
                     {myInfo?.name?.charAt(0)?.toUpperCase() || '?'}
                   </span>
                 )}
-                <div
-                  className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 hover:opacity-100 transition-opacity"
-                  style={{ background: 'rgba(0,0,0,0.5)' }}
-                >
-                  <span style={{ fontSize: '11px', fontWeight: 510, color: '#ffffff' }}>Change</span>
+                <div className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 hover:opacity-100 transition-opacity bg-black/40">
+                  <span className="text-xs font-medium text-white">Change</span>
                 </div>
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-              <p className="mt-2" style={{ fontSize: '11px', color: '#62666d' }}>Tap to change photo</p>
+              <p className="mt-2 text-xs text-gray-400">Tap to change photo</p>
             </div>
 
             {/* Name */}
             <div>
-              <label style={labelStyle}>Name</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
-                style={inputStyle}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
 
             {/* Jersey & Position */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Jersey #</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Jersey #</label>
                 <input
                   type="number"
                   value={jerseyNumber}
@@ -135,15 +105,15 @@ export default function EditProfile({ myInfo, onSave, onLogout, onClose }) {
                   placeholder="99"
                   min="0"
                   max="99"
-                  style={inputStyle}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label style={labelStyle}>Position</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Position</label>
                 <select
                   value={position}
                   onChange={e => setPosition(e.target.value)}
-                  style={{ ...inputStyle, appearance: 'none' }}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 >
                   <option value="">Select</option>
                   {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -155,14 +125,7 @@ export default function EditProfile({ myInfo, onSave, onLogout, onClose }) {
             <button
               type="submit"
               disabled={saving || !name.trim()}
-              className="w-full py-2.5 rounded-md transition-colors"
-              style={{
-                background: '#5e6ad2',
-                color: '#ffffff',
-                fontSize: '14px',
-                fontWeight: 510,
-                opacity: (saving || !name.trim()) ? 0.6 : 1,
-              }}
+              className="w-full py-2.5 rounded-lg font-semibold text-sm bg-violet-600 text-white hover:bg-violet-700 transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
@@ -171,14 +134,7 @@ export default function EditProfile({ myInfo, onSave, onLogout, onClose }) {
             <button
               type="button"
               onClick={onLogout}
-              className="w-full py-2.5 rounded-md transition-colors"
-              style={{
-                background: 'rgba(239,68,68,0.08)',
-                border: '1px solid rgba(239,68,68,0.2)',
-                color: '#f87171',
-                fontSize: '14px',
-                fontWeight: 510,
-              }}
+              className="w-full py-2.5 rounded-lg font-semibold text-sm text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
             >
               Log Out
             </button>

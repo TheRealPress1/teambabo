@@ -1,183 +1,161 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AddResult({
-  event,
-  members,
-  existingGoals,
-  onSubmit,
-  onClose,
-}) {
+export default function AddResult({ event, members, existingGoals, onSubmit, onClose }) {
   const [teamScore, setTeamScore] = useState('');
   const [oppScore, setOppScore] = useState('');
   const [goals, setGoals] = useState([]);
 
   useEffect(() => {
-    // Initialize goals from existingGoals
     if (existingGoals && existingGoals.length > 0) {
-      setGoals(
-        existingGoals.map((goal) => ({
-          scorer: goal.scorer_id || '',
-          assist: goal.assist_id || '',
-          minute: goal.minute || '',
-        }))
-      );
+      setGoals(existingGoals.map((goal) => ({
+        scorer: goal.scorer_id || '',
+        assist: goal.assist_id || '',
+        minute: goal.minute || '',
+      })));
     } else {
       setGoals([{ scorer: '', assist: '', minute: '' }]);
     }
   }, [existingGoals]);
 
-  const handleAddGoal = () => {
-    setGoals([...goals, { scorer: '', assist: '', minute: '' }]);
-  };
-
-  const handleDeleteGoal = (index) => {
-    setGoals(goals.filter((_, i) => i !== index));
-  };
-
+  const handleAddGoal = () => setGoals([...goals, { scorer: '', assist: '', minute: '' }]);
+  const handleDeleteGoal = (index) => setGoals(goals.filter((_, i) => i !== index));
   const handleGoalChange = (index, field, value) => {
-    const updatedGoals = [...goals];
-    updatedGoals[index][field] = value;
-    setGoals(updatedGoals);
+    const updated = [...goals];
+    updated[index][field] = value;
+    setGoals(updated);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Filter out goals without a scorer
     const validGoals = goals
-      .filter((goal) => goal.scorer)
-      .map((goal) => ({
-        scorer: goal.scorer,
-        assist: goal.assist || null,
-        minute: goal.minute || null,
-      }));
-
+      .filter((g) => g.scorer)
+      .map((g) => ({ scorer: g.scorer, assist: g.assist || null, minute: g.minute || null }));
     onSubmit(event.id, parseInt(teamScore) || 0, parseInt(oppScore) || 0, validGoals);
   };
 
   const opponentName = event.opponent || event.title || 'Opponent';
 
+  const inputStyle = {
+    width: '100%',
+    padding: '8px 10px',
+    borderRadius: '6px',
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: '#f7f8f8',
+    fontSize: '13px',
+    outline: 'none',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '11px',
+    fontWeight: 510,
+    color: '#8a8f98',
+    marginBottom: '5px',
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(0,0,0,0.85)' }}>
+      <div
+        className="max-w-lg w-full max-h-[90vh] overflow-y-auto rounded-xl"
+        style={{ background: '#0f1011', border: '1px solid rgba(255,255,255,0.08)' }}
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Game Result</h2>
-            <p className="text-sm text-gray-500 mt-1">vs {opponentName}</p>
+            <h2 style={{ fontSize: '16px', fontWeight: 590, color: '#f7f8f8', letterSpacing: '-0.24px' }}>Game Result</h2>
+            <p className="mt-0.5" style={{ fontSize: '12px', color: '#8a8f98' }}>vs {opponentName}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition text-xl"
+            className="flex items-center justify-center w-7 h-7 rounded-md"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#8a8f98', fontSize: '18px' }}
           >
             ×
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Score Section */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+          {/* Score */}
+          <div className="rounded-xl p-5" style={{ background: '#191a1b', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="text-center mb-4" style={{ fontSize: '11px', fontWeight: 510, color: '#62666d', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               Final Score
-            </label>
+            </div>
             <div className="flex items-center justify-between gap-4">
-              {/* Team Score */}
               <div className="flex-1">
-                <label htmlFor="teamScore" className="block text-xs font-medium text-gray-600 text-center mb-2">
-                  TeamBabo
-                </label>
+                <label style={{ ...labelStyle, textAlign: 'center' }}>TeamBabo</label>
                 <input
-                  id="teamScore"
                   type="number"
                   min="0"
                   value={teamScore}
                   onChange={(e) => setTeamScore(e.target.value)}
-                  className="w-full text-4xl font-bold text-center text-violet-600 bg-white border-2 border-violet-300 rounded-lg px-3 py-3 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                  style={{
+                    ...inputStyle,
+                    fontSize: '32px',
+                    fontWeight: 590,
+                    textAlign: 'center',
+                    padding: '12px',
+                    border: '1px solid rgba(94,106,210,0.3)',
+                    color: '#7170ff',
+                  }}
                 />
               </div>
-
-              {/* Dash */}
-              <div className="text-2xl font-bold text-gray-400">–</div>
-
-              {/* Opponent Score */}
+              <div style={{ fontSize: '20px', fontWeight: 590, color: '#3e3e44' }}>–</div>
               <div className="flex-1">
-                <label htmlFor="oppScore" className="block text-xs font-medium text-gray-600 text-center mb-2">
-                  {opponentName}
-                </label>
+                <label style={{ ...labelStyle, textAlign: 'center' }}>{opponentName}</label>
                 <input
-                  id="oppScore"
                   type="number"
                   min="0"
                   value={oppScore}
                   onChange={(e) => setOppScore(e.target.value)}
-                  className="w-full text-4xl font-bold text-center text-gray-700 bg-white border-2 border-gray-300 rounded-lg px-3 py-3 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                  style={{ ...inputStyle, fontSize: '32px', fontWeight: 590, textAlign: 'center', padding: '12px' }}
                 />
               </div>
             </div>
           </div>
 
-          {/* Goal Scorers Section */}
+          {/* Goal Scorers */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <label className="block text-sm font-medium text-gray-900">
-                Goal Scorers
-              </label>
+            <div className="flex items-center justify-between mb-3">
+              <span style={{ fontSize: '12px', fontWeight: 510, color: '#8a8f98' }}>Goal Scorers</span>
               <button
                 type="button"
                 onClick={handleAddGoal}
-                className="inline-flex items-center gap-1 text-sm text-violet-600 hover:text-violet-700 font-medium transition"
+                className="flex items-center gap-1"
+                style={{ fontSize: '12px', fontWeight: 510, color: '#7170ff' }}
               >
-                <span className="text-lg">+</span>
-                Add Goal
+                + Add Goal
               </button>
             </div>
 
             <div className="space-y-3">
               {goals.map((goal, index) => (
-                <div key={index} className="flex gap-3 items-end">
-                  {/* Scorer Dropdown */}
+                <div key={index} className="flex gap-2 items-end">
                   <div className="flex-1">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Scorer
-                    </label>
+                    <label style={labelStyle}>Scorer</label>
                     <select
                       value={goal.scorer}
                       onChange={(e) => handleGoalChange(index, 'scorer', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                      style={{ ...inputStyle, appearance: 'none' }}
                     >
                       <option value="">Select player</option>
-                      {members.map((member) => (
-                        <option key={member.id} value={member.id}>
-                          {member.name}
-                        </option>
-                      ))}
+                      {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
                   </div>
-
-                  {/* Assist Dropdown */}
                   <div className="flex-1">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Assist (opt.)
-                    </label>
+                    <label style={labelStyle}>Assist (opt.)</label>
                     <select
                       value={goal.assist}
                       onChange={(e) => handleGoalChange(index, 'assist', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                      style={{ ...inputStyle, appearance: 'none' }}
                     >
                       <option value="">None</option>
-                      {members.map((member) => (
-                        <option key={member.id} value={member.id}>
-                          {member.name}
-                        </option>
-                      ))}
+                      {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
                   </div>
-
-                  {/* Minute Input */}
-                  <div className="w-20">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Min. (opt.)
-                    </label>
+                  <div className="w-16">
+                    <label style={labelStyle}>Min.</label>
                     <input
                       type="number"
                       min="0"
@@ -185,15 +163,13 @@ export default function AddResult({
                       value={goal.minute}
                       onChange={(e) => handleGoalChange(index, 'minute', e.target.value)}
                       placeholder="90"
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                      style={{ ...inputStyle, textAlign: 'center' }}
                     />
                   </div>
-
-                  {/* Delete Button */}
                   <button
                     type="button"
                     onClick={() => handleDeleteGoal(index)}
-                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition text-lg"
+                    style={{ color: '#62666d', fontSize: '20px', lineHeight: 1, paddingBottom: '6px' }}
                   >
                     ×
                   </button>
@@ -202,18 +178,26 @@ export default function AddResult({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+              className="flex-1 py-2.5 rounded-md"
+              style={{
+                fontSize: '13px',
+                fontWeight: 510,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: '#8a8f98',
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition"
+              className="flex-1 py-2.5 rounded-md"
+              style={{ fontSize: '13px', fontWeight: 510, background: '#5e6ad2', color: '#ffffff' }}
             >
               Save Result
             </button>
