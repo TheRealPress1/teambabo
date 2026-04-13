@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { fmtDate, fmtTime } from '../lib/utils'
 
 export default function Stats({ events = [], goals = [], rsvps = [], members = [], isAdmin = false, onSaveResult }) {
-  const games = events
-    .filter(e => e.type?.toLowerCase() === 'game')
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+  const games = events.filter(e => e.type?.toLowerCase() === 'game')
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const pastGames = games.filter(g => new Date(g.date) < today)
-  const upcomingGames = games.filter(g => new Date(g.date) >= today)
+  const upcomingGames = games
+    .filter(g => new Date(g.date) >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+  const pastGames = games
+    .filter(g => new Date(g.date) < today)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
 
   // Season Record
   const gamesPlayed = pastGames.filter(e => e.team_score != null)
@@ -59,18 +61,6 @@ export default function Stats({ events = [], goals = [], rsvps = [], members = [
 
   return (
     <div className="space-y-6">
-      {/* Season Record */}
-      <div className="grid grid-cols-3 gap-3">
-        <StatCard label="Wins" value={wins} color="green" />
-        <StatCard label="Draws" value={draws} color="amber" />
-        <StatCard label="Losses" value={losses} color="red" />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Goals For" value={goalsFor} color="violet" />
-        <StatCard label="Goals Against" value={goalsAgainst} color="violet" />
-      </div>
-
       {/* Games List */}
       <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
         <div className="px-4 py-3 border-b border-stone-100 bg-stone-50">
@@ -114,6 +104,18 @@ export default function Stats({ events = [], goals = [], rsvps = [], members = [
             <p className="text-sm text-stone-500">No games scheduled yet</p>
           </div>
         )}
+      </div>
+
+      {/* Season Record */}
+      <div className="grid grid-cols-3 gap-3">
+        <StatCard label="Wins" value={wins} color="green" />
+        <StatCard label="Draws" value={draws} color="amber" />
+        <StatCard label="Losses" value={losses} color="red" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <StatCard label="Goals For" value={goalsFor} color="violet" />
+        <StatCard label="Goals Against" value={goalsAgainst} color="violet" />
       </div>
 
       {/* Top Scorers */}
