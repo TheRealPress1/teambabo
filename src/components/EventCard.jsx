@@ -136,7 +136,7 @@ export default function EventCard({
       {/* RSVP Section (Upcoming Events) */}
       {!isPast && (
         <div className="pt-4 border-t border-gray-100 relative z-10">
-          <div className="flex items-center gap-3">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={e => {
@@ -144,7 +144,7 @@ export default function EventCard({
                 e.stopPropagation()
                 onRsvp(event.id, 'going')
               }}
-              className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
+              className={`py-2 px-2 rounded-lg font-medium text-sm transition-colors text-center ${
                 myRsvp?.status === 'going'
                   ? 'bg-violet-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -159,7 +159,7 @@ export default function EventCard({
                 e.stopPropagation()
                 onRsvp(event.id, 'maybe')
               }}
-              className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
+              className={`py-2 px-2 rounded-lg font-medium text-sm transition-colors text-center ${
                 myRsvp?.status === 'maybe'
                   ? 'bg-violet-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -174,7 +174,7 @@ export default function EventCard({
                 e.stopPropagation()
                 onRsvp(event.id, 'cant')
               }}
-              className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
+              className={`py-2 px-2 rounded-lg font-medium text-sm transition-colors text-center ${
                 myRsvp?.status === 'cant'
                   ? 'bg-violet-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
