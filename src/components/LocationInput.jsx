@@ -28,6 +28,7 @@ export default function LocationInput({ value, onChange, placeholder, className 
   const serviceRef = useRef(null)
   const inputRef = useRef(null)
   const wrapperRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   // Sync external value changes
   useEffect(() => {
@@ -63,7 +64,8 @@ export default function LocationInput({ value, onChange, placeholder, className 
   // Close suggestions on outside click
   useEffect(() => {
     const handleClick = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target) &&
+          dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowSuggestions(false)
       }
     }
@@ -132,6 +134,7 @@ export default function LocationInput({ value, onChange, placeholder, className 
       />
       {showSuggestions && suggestions.length > 0 && createPortal(
         <ul
+          ref={dropdownRef}
           style={dropdownStyle}
           className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
           onMouseDown={(e) => e.preventDefault()}
