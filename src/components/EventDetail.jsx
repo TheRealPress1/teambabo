@@ -69,7 +69,7 @@ export default function EventDetail({
   // Title display logic
   let mainTitle = event.title
   let subtitle = null
-  if (event.type === 'Game' && event.opponent) {
+  if (event.type?.toLowerCase() === 'game' && event.opponent) {
     const prefix = event.home_away === 'home' ? 'vs' : '@'
     mainTitle = `${prefix} ${event.opponent}`
     if (event.title && event.title !== mainTitle) {
@@ -87,7 +87,7 @@ export default function EventDetail({
       location: editLocation || null,
       notes: editNotes || null,
     }
-    if (event.type === 'Game') {
+    if (event.type?.toLowerCase() === 'game') {
       updates.opponent = editOpponent || null
       updates.home_away = editHomeAway
       if (isPast && editTeamScore !== '' && editOppScore !== '') {
@@ -187,7 +187,7 @@ export default function EventDetail({
                   />
                 </div>
 
-                {event.type === 'Game' && (
+                {event.type?.toLowerCase() === 'game' && (
                   <>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Opponent</label>
@@ -258,7 +258,7 @@ export default function EventDetail({
                 )}
 
                 {/* Result Display (Past Games with Score) */}
-                {isPast && event.type === 'Game' && event.team_score !== null && event.opponent_score !== null && (
+                {isPast && event.type?.toLowerCase() === 'game' && event.team_score !== null && event.opponent_score !== null && (
                   <div className="bg-gray-50 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-4xl font-bold text-gray-900">
@@ -454,7 +454,7 @@ export default function EventDetail({
                 </div>
 
                 {/* Lineup Button */}
-                {event.type === 'Game' && (lineup?.status === 'published' || isAdmin) && (
+                {event.type?.toLowerCase() === 'game' && (lineup?.status === 'published' || isAdmin) && (
                   <div>
                     <button
                       onClick={onLineup}

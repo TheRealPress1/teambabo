@@ -28,7 +28,7 @@ export default function EventCard({
 
   // Determine result display for games
   let resultDisplay = null
-  if (isPast && event.type === 'Game' && event.team_score !== null && event.opponent_score !== null) {
+  if (isPast && event.type?.toLowerCase() === 'game' && event.team_score !== null && event.opponent_score !== null) {
     const teamScore = event.team_score
     const opponentScore = event.opponent_score
     let resultColor = 'text-amber-600' // draw
@@ -44,7 +44,7 @@ export default function EventCard({
 
   // Title/Opponent display
   let titleDisplay = event.title
-  if (event.type === 'Game' && event.opponent) {
+  if (event.type?.toLowerCase() === 'game' && event.opponent) {
     const prefix = event.home_away === 'home' ? 'vs' : '@'
     titleDisplay = `${prefix} ${event.opponent}`
   }

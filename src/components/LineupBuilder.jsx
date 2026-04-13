@@ -77,7 +77,7 @@ export default function LineupBuilder({
 
   // Title
   let eventTitle = event.title
-  if (event.type === 'Game' && event.opponent) {
+  if (event.type?.toLowerCase() === 'game' && event.opponent) {
     const prefix = event.home_away === 'home' ? 'vs' : '@'
     eventTitle = `${prefix} ${event.opponent}`
   }

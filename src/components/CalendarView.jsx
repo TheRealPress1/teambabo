@@ -107,7 +107,7 @@ export default function CalendarView({
   }
 
   const getEventTitle = (ev) => {
-    if (ev.type === 'Game' && ev.opponent) {
+    if (ev.type?.toLowerCase() === 'game' && ev.opponent) {
       const prefix = ev.home_away === 'home' ? 'vs' : '@'
       return `${prefix} ${ev.opponent}`
     }
