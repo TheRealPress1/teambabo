@@ -47,6 +47,14 @@ export default function AuthScreen({ onSignUp, onLogin }) {
       setError('Password must be at least 6 characters')
       return
     }
+    if (!jerseyNumber) {
+      setError('Please enter your jersey number')
+      return
+    }
+    if (!avatarFile) {
+      setError('Please upload a profile photo')
+      return
+    }
     setSubmitting(true)
     const result = await onSignUp({
       email, password, name: name.trim(),
@@ -157,7 +165,7 @@ export default function AuthScreen({ onSignUp, onLogin }) {
                 onChange={handleAvatarChange}
                 className="hidden"
               />
-              <p className="text-xs text-gray-400 mt-2">Tap to upload a photo</p>
+              <p className="text-xs text-gray-400 mt-2">Tap to upload a photo *</p>
             </div>
 
             <div>
@@ -196,7 +204,7 @@ export default function AuthScreen({ onSignUp, onLogin }) {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Jersey #</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Jersey # *</label>
                 <input
                   type="number"
                   value={jerseyNumber}
