@@ -25,30 +25,30 @@ export function isToday(d) {
   return d === new Date().toISOString().split('T')[0]
 }
 
-export function generateICS(ev) {
-  const dtStart = ev.date.replace(/-/g, '') + (ev.time ? 'T' + ev.time.replace(/:/g, '') + '00' : '')
-  const dtEnd = ev.date.replace(/-/g, '') + (ev.end_time ? 'T' + ev.end_time.replace(/:/g, '') + '00' : ev.time ? 'T' + ev.time.replace(/:/g, '') + '00' : '')
-  const title = ev.type === 'game'
+export function openGoogleCalendar(ev) {
+  const title = ev.type === 'Game'
     ? `TeamBabo ${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
     : `TeamBabo — ${ev.title}`
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//TeamBabo//Team Hub//EN',
-    'BEGIN:VEVENT',
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
-    `SUMMARY:${title}`,
-    `LOCATION:${ev.location || ''}`,
-    `DESCRIPTION:${ev.notes || ''}`,
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n')
-  const blob = new Blob([ics], { type: 'text/calendar' })
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = `teambabo-${ev.date}.ics`
-  a.click()
+
+  // Google Calendar expects YYYYMMDDTHHmmss format
+  const fmtDt = (date, time) => {
+    const d = date.replace(/-/g, '')
+    if (!time) return d
+    return d + 'T' + time.replace(/:/g, '') + '00'
+  }
+
+  const start = fmtDt(ev.date, ev.time)
+  const end = fmtDt(ev.date, ev.end_time || ev.time)
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${start}/${end}`,
+    location: ev.location || '',
+    details: ev.notes || '',
+  })
+
+  window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank')
 }
 
 export const EMOJIS = ['⚽', '🏆', '🥅', '🦁', '💪', '🔥', '⭐', '🎯', '👑', '🐉', '🦅', '🐺', '🦈', '🎖️', '💎']
