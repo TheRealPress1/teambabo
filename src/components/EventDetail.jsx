@@ -434,25 +434,6 @@ export default function EventDetail({
                   </div>
                 </div>
 
-                {/* Admin Actions */}
-                {isAdmin && (
-                  <div className="flex items-center gap-3">
-                    {event.type === 'Game' && (
-                      <button
-                        onClick={onAddResult}
-                        className="flex-1 py-2 px-4 rounded-lg font-medium text-sm bg-gray-200 text-gray-900 hover:bg-gray-300 transition-colors"
-                      >
-                        {event.team_score !== null ? 'Edit Result' : 'Add Result'}
-                      </button>
-                    )}
-                    <button
-                      onClick={() => onDelete(event.id)}
-                      className="py-2 px-4 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
               </>
             )}
           </div>
