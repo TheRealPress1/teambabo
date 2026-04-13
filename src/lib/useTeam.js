@@ -6,6 +6,7 @@ export function useTeam() {
   const [events, setEvents] = useState([])
   const [rsvps, setRsvps] = useState([])
   const [goals, setGoals] = useState([])
+  const [lineups, setLineups] = useState([])
   const [session, setSession] = useState(null)
   const [myMember, setMyMember] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -24,16 +25,18 @@ export function useTeam() {
   }, [])
 
   const loadAll = useCallback(async () => {
-    const [m, e, r, g] = await Promise.all([
+    const [m, e, r, g, l] = await Promise.all([
       supabase.from('soccer_members').select('*').order('jersey_number'),
       supabase.from('soccer_events').select('*').order('date', { ascending: true }),
       supabase.from('soccer_rsvps').select('*'),
       supabase.from('soccer_goals').select('*'),
+      supabase.from('soccer_lineups').select('*'),
     ])
     setMembers(m.data || [])
     setEvents(e.data || [])
     setRsvps(r.data || [])
     setGoals(g.data || [])
+    setLineups(l.data || [])
 
     // Find the member profile linked to the current auth user
     if (session?.user) {
@@ -57,6 +60,7 @@ export function useTeam() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'soccer_events' }, loadAll)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'soccer_rsvps' }, loadAll)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'soccer_goals' }, loadAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'soccer_lineups' }, loadAll)
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [loadAll])
@@ -156,6 +160,27 @@ export function useTeam() {
     await loadAll()
   }
 
+  const saveLineup = async ({ event_id, formation, slots, status }) => {
+    const existing = lineups.find(l => l.event_id === event_id)
+    if (existing) {
+      await supabase.from('soccer_lineups').update({
+        formation,
+        slots,
+        status,
+        updated_at: new Date().toISOString(),
+      }).eq('id', existing.id)
+    } else {
+      await supabase.from('soccer_lineups').insert({
+        event_id,
+        formation,
+        slots,
+        status,
+        created_by: myMember?.id,
+      })
+    }
+    await loadAll()
+  }
+
   const promoteMember = async (memberId) => {
     await supabase.from('soccer_members').update({ role: 'admin' }).eq('id', memberId)
     await loadAll()
@@ -186,13 +211,13 @@ export function useTeam() {
   const me = myMember?.id || null
 
   return {
-    members, events, rsvps, goals,
+    members, events, rsvps, goals, lineups,
     me, myInfo: myMember, isAdmin,
     loading: loading || authLoading,
     session,
     hasProfile: !!myMember,
     signUp, login, logout, updateProfile,
-    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, promoteMember,
+    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, saveLineup, promoteMember,
     getMemberName: (id) => members.find(m => m.id === id)?.name || '?',
     getMemberEmoji: (id) => members.find(m => m.id === id)?.avatar_emoji || '⚽',
     getMemberAvatar: (id) => {
@@ -202,5 +227,6 @@ export function useTeam() {
     getEventRsvps: (eid) => rsvps.filter(r => r.event_id === eid),
     getMyRsvp: (eid) => myMember ? rsvps.find(r => r.event_id === eid && r.member_id === myMember.id) : null,
     getEventGoals: (eid) => goals.filter(g => g.event_id === eid),
+    getEventLineup: (eid) => lineups.find(l => l.event_id === eid) || null,
   }
 }
