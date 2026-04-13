@@ -94,6 +94,17 @@ export default function CalendarView({
     }
   }
 
+  const goToToday = () => {
+    const today = new Date()
+    setViewYear(today.getFullYear())
+    setViewMonth(today.getMonth())
+    if (mode === 'week') {
+      const start = new Date(today)
+      start.setDate(start.getDate() - start.getDay())
+      setSelectedWeekStart(start)
+    }
+  }
+
   // Build event map: 'YYYY-MM-DD' -> events[]
   const eventsByDate = {}
   events.forEach(ev => {
@@ -117,7 +128,7 @@ export default function CalendarView({
   // Week mode helpers
   const getWeekDays = () => {
     return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(selectedWeekStart)
+      const d = new Date(start)
       d.setDate(d.getDate() + i)
       return d
     })
@@ -165,6 +176,12 @@ export default function CalendarView({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={goToToday}
+            className="px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+          >
+            Today
+          </button>
           <div className="flex bg-gray-100 rounded-lg p-0.5">
             <button
               onClick={() => setMode('week')}
@@ -275,22 +292,39 @@ export default function CalendarView({
                     </div>
                   </div>
                   <div className="space-y-1">
-                    {dayEvents.map(ev => (
-                      <button
-                        key={ev.id}
-                        onClick={() => onSelectEvent(ev.id)}
-                        className={`w-full text-left p-1.5 rounded-lg text-xs ${
-                          ev.type?.toLowerCase() === 'game' ? 'bg-violet-100 text-violet-700' :
-                          ev.type?.toLowerCase() === 'practice' ? 'bg-cyan-100 text-cyan-700' :
-                          'bg-amber-100 text-amber-700'
-                        } hover:opacity-80 transition-opacity`}
-                      >
-                        <div className="font-medium truncate">{getEventTitle(ev)}</div>
-                        {ev.time && (
-                          <div className="text-[10px] opacity-75 mt-0.5">{fmtTime(ev.time)}</div>
-                        )}
-                      </button>
-                    ))}
+                    {dayEvents.map(ev => {
+                      const eventRsvps = rsvps.filter(r => r.event_id === ev.id)
+                      const myRsvp = eventRsvps.find(r => r.member_id === me)
+                      const goingCount = eventRsvps.filter(r => r.status === 'going').length
+
+                      return (
+                        <button
+                          key={ev.id}
+                          onClick={() => onSelectEvent(ev.id)}
+                          className={`w-full text-left p-1.5 rounded-lg text-xs ${
+                            ev.type?.toLowerCase() === 'game' ? 'bg-violet-100 text-violet-700' :
+                            ev.type?.toLowerCase() === 'practice' ? 'bg-cyan-100 text-cyan-700' :
+                            'bg-amber-100 text-amber-700'
+                          } hover:opacity-80 transition-opacity`}
+                        >
+                          <div className="font-medium truncate">{getEventTitle(ev)}</div>
+                          {ev.time && (
+                            <div className="text-[10px] opacity-75 mt-0.5">{fmtTime(ev.time)}</div>
+                          )}
+                          <div className="text-[10px] opacity-75 mt-0.5">
+                            {goingCount} going
+                            {myRsvp && (
+                              <span className={`ml-1 ${
+                                myRsvp.status === 'going' ? 'text-green-700' :
+                                myRsvp.status === 'maybe' ? 'text-amber-700' : 'text-red-700'
+                              }`}>
+                                ({myRsvp.status === 'cant' ? "can't" : myRsvp.status})
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )
