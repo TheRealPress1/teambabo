@@ -160,24 +160,47 @@ export function useTeam() {
     await loadAll()
   }
 
-  const saveLineup = async ({ event_id, formation, slots, status }) => {
-    const existing = lineups.find(l => l.event_id === event_id)
-    if (existing) {
+  const saveLineup = async ({ id, event_id, name, formation, slots, status }) => {
+    if (id) {
       await supabase.from('soccer_lineups').update({
+        name,
         formation,
         slots,
         status,
         updated_at: new Date().toISOString(),
-      }).eq('id', existing.id)
+      }).eq('id', id)
+    } else if (event_id) {
+      const existing = lineups.find(l => l.event_id === event_id)
+      if (existing) {
+        await supabase.from('soccer_lineups').update({
+          formation,
+          slots,
+          status,
+          updated_at: new Date().toISOString(),
+        }).eq('id', existing.id)
+      } else {
+        await supabase.from('soccer_lineups').insert({
+          event_id,
+          formation,
+          slots,
+          status,
+          created_by: myMember?.id,
+        })
+      }
     } else {
       await supabase.from('soccer_lineups').insert({
-        event_id,
+        name,
         formation,
         slots,
         status,
         created_by: myMember?.id,
       })
     }
+    await loadAll()
+  }
+
+  const deleteLineup = async (lineupId) => {
+    await supabase.from('soccer_lineups').delete().eq('id', lineupId)
     await loadAll()
   }
 
@@ -217,7 +240,7 @@ export function useTeam() {
     session,
     hasProfile: !!myMember,
     signUp, login, logout, updateProfile,
-    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, saveLineup, promoteMember,
+    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, saveLineup, deleteLineup, promoteMember,
     getMemberName: (id) => members.find(m => m.id === id)?.name || '?',
     getMemberEmoji: (id) => members.find(m => m.id === id)?.avatar_emoji || '⚽',
     getMemberAvatar: (id) => {
@@ -228,5 +251,6 @@ export function useTeam() {
     getMyRsvp: (eid) => myMember ? rsvps.find(r => r.event_id === eid && r.member_id === myMember.id) : null,
     getEventGoals: (eid) => goals.filter(g => g.event_id === eid),
     getEventLineup: (eid) => lineups.find(l => l.event_id === eid) || null,
+    getTemplateLineups: () => lineups.filter(l => !l.event_id),
   }
 }

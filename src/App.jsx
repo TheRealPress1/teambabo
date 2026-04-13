@@ -22,6 +22,7 @@ export default function App() {
   const [tab, setTab] = useState('schedule')
   const [modal, setModal] = useState(null)
   const [selectedEventId, setSelectedEventId] = useState(null)
+  const [editingLineup, setEditingLineup] = useState(null)
 
   if (team.loading) {
     return (
@@ -140,6 +141,9 @@ export default function App() {
             me={team.me}
             isAdmin={team.isAdmin}
             onPromote={team.promoteMember}
+            templateLineups={team.getTemplateLineups()}
+            onCreateLineup={() => { setEditingLineup(null); setModal('templateLineup') }}
+            onEditLineup={(l) => { setEditingLineup(l); setModal('templateLineup') }}
           />
         )}
         {tab === 'stats' && (
@@ -210,6 +214,25 @@ export default function App() {
             setModal('eventDetail')
           }}
           onClose={() => setModal('eventDetail')}
+        />
+      )}
+
+      {modal === 'templateLineup' && (
+        <LineupBuilder
+          members={team.members}
+          lineup={editingLineup}
+          isAdmin={team.isAdmin}
+          onSave={async (data) => {
+            await team.saveLineup(data)
+            setModal(null)
+            setEditingLineup(null)
+          }}
+          onDelete={async (id) => {
+            await team.deleteLineup(id)
+            setModal(null)
+            setEditingLineup(null)
+          }}
+          onClose={() => { setModal(null); setEditingLineup(null) }}
         />
       )}
 
