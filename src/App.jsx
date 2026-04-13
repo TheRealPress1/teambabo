@@ -8,6 +8,7 @@ import Stats from './components/Stats'
 import EventDetail from './components/EventDetail'
 import AddEvent from './components/AddEvent'
 import AddResult from './components/AddResult'
+import EditProfile from './components/EditProfile'
 
 const TABS = [
   { id: 'schedule', label: 'Schedule' },
@@ -23,10 +24,10 @@ export default function App() {
 
   if (team.loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#08090a' }}>
         <div className="text-center">
-          <div className="text-lg font-bold text-gray-600 mb-4">TB</div>
-          <p className="text-gray-400 font-medium">Loading TeamBabo...</p>
+          <div className="text-lg font-semibold mb-3" style={{ color: '#f7f8f8', fontWeight: 590 }}>TB</div>
+          <p style={{ color: '#8a8f98', fontSize: '14px' }}>Loading TeamBabo...</p>
         </div>
       </div>
     )
@@ -58,60 +59,64 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#08090a' }}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
+      <header className="sticky top-0 z-40" style={{ background: '#0f1011', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 tracking-tight">TeamBabo</h1>
-              <p className="text-xs text-gray-400">Team Hub</p>
-            </div>
+          <div>
+            <h1 className="text-base tracking-tight" style={{ color: '#f7f8f8', fontWeight: 590, letterSpacing: '-0.24px' }}>TeamBabo</h1>
+            <p className="text-xs" style={{ color: '#62666d' }}>Team Hub</p>
           </div>
           <div className="flex items-center gap-3">
             {team.isAdmin && (
               <button
                 onClick={() => setModal('addEvent')}
-                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                className="text-sm px-4 py-1.5 rounded-md text-white transition-colors"
+                style={{ background: '#5e6ad2', fontWeight: 510, fontSize: '13px' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#828fff'}
+                onMouseLeave={e => e.currentTarget.style.background = '#5e6ad2'}
               >
                 + Event
               </button>
             )}
             <button
-              onClick={team.logout}
-              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-lg hover:bg-gray-200 transition-colors overflow-hidden"
-              title="Log out"
+              onClick={() => setModal('editProfile')}
+              className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden transition-colors"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+              title="Edit profile"
             >
               {team.myInfo?.avatar_url ? (
                 <img src={team.myInfo.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-xs font-bold text-gray-500">{team.myInfo?.name?.charAt(0)}</span>
+                <span style={{ fontSize: '11px', fontWeight: 590, color: '#d0d6e0' }}>
+                  {team.myInfo?.name?.charAt(0)}
+                </span>
               )}
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Tab Bar */}
-      <div className="bg-white border-b border-gray-100">
+        {/* Tab Bar */}
         <div className="max-w-2xl mx-auto px-4">
           <div className="flex">
             {TABS.map(t => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`flex-1 py-3 text-sm font-semibold text-center border-b-2 transition-colors ${
-                  tab === t.id
-                    ? 'border-violet-600 text-violet-600'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
+                className="flex-1 py-2.5 text-center border-b-2 transition-colors"
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 510,
+                  borderBottomColor: tab === t.id ? '#7170ff' : 'transparent',
+                  color: tab === t.id ? '#7170ff' : '#62666d',
+                }}
               >
                 {t.label}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-4 py-6 pb-24">
@@ -175,6 +180,15 @@ export default function App() {
             setSelectedEventId(null)
           }}
           onDownloadICS={() => openGoogleCalendar(selectedEvent)}
+        />
+      )}
+
+      {modal === 'editProfile' && (
+        <EditProfile
+          myInfo={team.myInfo}
+          onSave={team.updateProfile}
+          onLogout={() => { setModal(null); team.logout() }}
+          onClose={() => setModal(null)}
         />
       )}
 
