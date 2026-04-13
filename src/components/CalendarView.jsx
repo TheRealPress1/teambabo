@@ -244,8 +244,8 @@ export default function CalendarView({
                           key={ev.id}
                           onClick={() => onSelectEvent(ev.id)}
                           className={`w-full text-left px-1.5 py-0.5 rounded text-[11px] font-medium truncate block ${
-                            ev.type === 'Game' ? 'bg-violet-100 text-violet-700' :
-                            ev.type === 'Practice' ? 'bg-cyan-100 text-cyan-700' :
+                            ev.type?.toLowerCase() === 'game' ? 'bg-violet-100 text-violet-700' :
+                            ev.type?.toLowerCase() === 'practice' ? 'bg-cyan-100 text-cyan-700' :
                             'bg-amber-100 text-amber-700'
                           } hover:opacity-80 transition-opacity`}
                         >
@@ -302,8 +302,8 @@ export default function CalendarView({
                           key={ev.id}
                           onClick={() => onSelectEvent(ev.id)}
                           className={`w-full text-left p-1.5 rounded-lg text-xs ${
-                            ev.type === 'Game' ? 'bg-violet-100 text-violet-700' :
-                            ev.type === 'Practice' ? 'bg-cyan-100 text-cyan-700' :
+                            ev.type?.toLowerCase() === 'game' ? 'bg-violet-100 text-violet-700' :
+                            ev.type?.toLowerCase() === 'practice' ? 'bg-cyan-100 text-cyan-700' :
                             'bg-amber-100 text-amber-700'
                           } hover:opacity-80 transition-opacity`}
                         >
