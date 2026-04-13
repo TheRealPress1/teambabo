@@ -34,7 +34,7 @@ export default function JoinScreen({ members = [], onLogin, onJoin }) {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <h1 className="text-4xl font-bold text-slate-800">TeamBabo</h1>
+            <h1 className="text-4xl font-bold text-slate-800">Babson Club Soccer</h1>
             <span className="text-4xl">⚽</span>
           </div>
           <p className="text-sm text-slate-500">Your squad, your game, your rules</p>

@@ -62,7 +62,7 @@ export default function AuthScreen({ onSignUp, onLogin }) {
         {/* Header */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <h1 className="text-4xl font-bold text-gray-900">TeamBabo</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Babson Club Soccer</h1>
           </div>
           <p className="text-gray-500 text-sm">Your squad, your game, your hub</p>
         </div>

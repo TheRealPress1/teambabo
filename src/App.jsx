@@ -26,8 +26,8 @@ export default function App() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-lg font-bold text-gray-600 mb-4">TB</div>
-          <p className="text-gray-400 font-medium">Loading TeamBabo...</p>
+          <div className="text-lg font-bold text-gray-600 mb-4">BCS</div>
+          <p className="text-gray-400 font-medium">Loading...</p>
         </div>
       </div>
     )
@@ -65,8 +65,8 @@ export default function App() {
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-lg font-bold text-gray-900 tracking-tight">TeamBabo</h1>
-              <p className="text-xs text-gray-400">Team Hub</p>
+              <h1 className="text-lg font-bold text-gray-900 tracking-tight">Babson Club Soccer</h1>
+              <p className="text-xs text-gray-400">2026</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -170,6 +170,7 @@ export default function App() {
           onRsvp={team.setRsvp}
           onClose={() => { setModal(null); setSelectedEventId(null) }}
           onAddResult={handleAddResult}
+          onUpdateEvent={team.updateEvent}
           onDelete={async (id) => {
             await team.deleteEvent(id)
             setModal(null)

@@ -116,6 +116,11 @@ export function useTeam() {
     await loadAll()
   }
 
+  const updateEvent = async (eventId, updates) => {
+    await supabase.from('soccer_events').update(updates).eq('id', eventId)
+    await loadAll()
+  }
+
   const deleteEvent = async (eventId) => {
     await supabase.from('soccer_events').delete().eq('id', eventId)
     await loadAll()
@@ -187,7 +192,7 @@ export function useTeam() {
     session,
     hasProfile: !!myMember,
     signUp, login, logout, updateProfile,
-    addEvent, deleteEvent, setRsvp, saveResult, promoteMember,
+    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, promoteMember,
     getMemberName: (id) => members.find(m => m.id === id)?.name || '?',
     getMemberEmoji: (id) => members.find(m => m.id === id)?.avatar_emoji || '⚽',
     getMemberAvatar: (id) => {

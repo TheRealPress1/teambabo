@@ -131,15 +131,39 @@ export default function Schedule({
         )}
       </section>
 
-      {/* Past Results Section - only in list view */}
+      {/* Past Events Section - only in list view */}
       {view === 'list' && pastEvents.length > 0 && (
-        <section>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Past Results</h2>
-          <div className="space-y-4">
-            {renderEventCards(pastEvents, true)}
-          </div>
-        </section>
+        <PastEventsSection pastEvents={pastEvents} renderEventCards={renderEventCards} />
       )}
     </div>
+  )
+}
+
+function PastEventsSection({ pastEvents, renderEventCards }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <section>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-2 mb-6 group"
+      >
+        <h2 className="text-2xl font-semibold text-gray-900">Past Events</h2>
+        <svg
+          className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+        <span className="text-sm text-gray-400 ml-1">({pastEvents.length})</span>
+      </button>
+      {open && (
+        <div className="space-y-4">
+          {renderEventCards(pastEvents, true)}
+        </div>
+      )}
+    </section>
   )
 }
