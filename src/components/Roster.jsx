@@ -1,10 +1,19 @@
-export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup }) {
+export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup, rsvps = [], events = [] }) {
   const coaches = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
+  // Calculate attendance: going = yes, maybe/cant = no
+  const getAttendance = (memberId) => {
+    const memberRsvps = rsvps.filter(r => r.member_id === memberId)
+    if (memberRsvps.length === 0) return null
+    const going = memberRsvps.filter(r => r.status === 'going').length
+    return Math.round((going / memberRsvps.length) * 100)
+  }
+
   const MemberRow = ({ member }) => {
     const isMe = member.id === me;
-    const isAdmin = member.role === 'admin';
+    const memberIsAdmin = member.role === 'admin';
+    const attendance = getAttendance(member.id);
 
     return (
       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
@@ -23,7 +32,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
             <div className="flex items-center gap-2">
               <span className="font-semibold text-stone-900">{member.name}</span>
               {isMe && <span className="text-xs text-stone-500">(you)</span>}
-              {isAdmin && (
+              {memberIsAdmin && (
                 <span className="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full font-medium">
                   Admin
                 </span>
@@ -38,8 +47,19 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
           </div>
         </div>
 
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {attendance !== null && (
+            <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${
+              attendance >= 75 ? 'bg-green-50 text-green-600' :
+              attendance >= 50 ? 'bg-amber-50 text-amber-600' :
+              'bg-red-50 text-red-600'
+            }`}>
+              {attendance}%
+            </span>
+          )}
+
         {/* Promote button */}
-        {isAdmin && !isMe && !isAdmin && (
+        {isAdmin && !isMe && !memberIsAdmin && (
           <button
             onClick={() => onPromote(member.id)}
             className="text-xs px-3 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium rounded transition-colors"
@@ -47,6 +67,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
             Make admin
           </button>
         )}
+        </div>
       </div>
     );
   };
