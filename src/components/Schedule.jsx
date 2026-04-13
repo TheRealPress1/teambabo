@@ -28,9 +28,9 @@ export default function Schedule({
     if (eventList.length === 0) return null
 
     return eventList.map(event => {
-      const eventRsvps = rsvps.filter(r => r.eventId === event.id)
-      const eventGoals = goals.filter(g => g.eventId === event.id)
-      const myRsvp = eventRsvps.find(r => r.userId === me)
+      const eventRsvps = rsvps.filter(r => r.event_id === event.id)
+      const eventGoals = goals.filter(g => g.event_id === event.id)
+      const myRsvp = eventRsvps.find(r => r.member_id === me)
 
       const eventDate = new Date(event.date)
       const isToday =
