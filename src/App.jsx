@@ -9,6 +9,7 @@ import EventDetail from './components/EventDetail'
 import AddEvent from './components/AddEvent'
 import AddResult from './components/AddResult'
 import EditProfile from './components/EditProfile'
+import LineupBuilder from './components/LineupBuilder'
 
 const TABS = [
   { id: 'schedule', label: 'Schedule' },
@@ -51,6 +52,10 @@ export default function App() {
 
   const handleAddResult = () => {
     setModal('addResult')
+  }
+
+  const handleLineup = () => {
+    setModal('lineup')
   }
 
   const handleSaveResult = async (eventId, teamScore, oppScore, goals) => {
@@ -178,6 +183,8 @@ export default function App() {
           }}
           onGoogleCal={() => openGoogleCalendar(selectedEvent)}
           onOutlookCal={() => openOutlookCalendar(selectedEvent)}
+          onLineup={handleLineup}
+          lineup={team.getEventLineup(selectedEvent.id)}
         />
       )}
 
@@ -187,6 +194,20 @@ export default function App() {
           onSave={team.updateProfile}
           onLogout={() => { setModal(null); team.logout() }}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {modal === 'lineup' && selectedEvent && (
+        <LineupBuilder
+          event={selectedEvent}
+          members={team.members}
+          lineup={team.getEventLineup(selectedEvent.id)}
+          isAdmin={team.isAdmin}
+          onSave={async (data) => {
+            await team.saveLineup(data)
+            setModal('eventDetail')
+          }}
+          onClose={() => setModal('eventDetail')}
         />
       )}
 
