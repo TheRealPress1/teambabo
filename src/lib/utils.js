@@ -27,8 +27,8 @@ export function isToday(d) {
 
 export function openGoogleCalendar(ev) {
   const title = ev.type === 'Game'
-    ? `TeamBabo ${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
-    : `TeamBabo — ${ev.title}`
+    ? `${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
+    : ev.title
 
   // Google Calendar expects YYYYMMDDTHHmmss format
   const fmtDt = (date, time) => {
