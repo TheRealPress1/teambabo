@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { fmtDate, fmtTime } from '../lib/utils'
 
-export default function Stats({ events = [], goals = [], rsvps = [], members = [], isAdmin = false, onSaveResult }) {
+export default function Stats({ events = [], goals = [], rsvps = [], members = [], isAdmin = false, onSaveResult, onSelectEvent }) {
   const games = events.filter(e => e.type?.toLowerCase() === 'game')
 
+  const localDate = (d) => new Date(d + 'T00:00:00')
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const upcomingGames = games
-    .filter(g => new Date(g.date) >= today)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .filter(g => localDate(g.date) >= today)
+    .sort((a, b) => localDate(a.date) - localDate(b.date))
   const pastGames = games
-    .filter(g => new Date(g.date) < today)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .filter(g => localDate(g.date) < today)
+    .sort((a, b) => localDate(a.date) - localDate(b.date))
 
   // Season Record
   const gamesPlayed = pastGames.filter(e => e.team_score != null)
@@ -73,7 +74,7 @@ export default function Stats({ events = [], goals = [], rsvps = [], members = [
               <span className="text-xs font-semibold text-stone-400 uppercase tracking-wide">Upcoming</span>
             </div>
             {upcomingGames.map(game => (
-              <GameRow key={game.id} game={game} goals={goals} members={members} getMemberName={getMemberName} getGameTitle={getGameTitle} isPast={false} isAdmin={false} />
+              <GameRow key={game.id} game={game} goals={goals} members={members} getMemberName={getMemberName} getGameTitle={getGameTitle} isPast={false} isAdmin={false} onSelectEvent={onSelectEvent} />
             ))}
           </div>
         )}
@@ -94,6 +95,7 @@ export default function Stats({ events = [], goals = [], rsvps = [], members = [
                 isPast={true}
                 isAdmin={isAdmin}
                 onSaveResult={onSaveResult}
+                onSelectEvent={onSelectEvent}
               />
             ))}
           </div>
@@ -170,7 +172,7 @@ function Leaderboard({ title, items, emptyMessage }) {
   )
 }
 
-function GameRow({ game, goals, members, getMemberName, getGameTitle, isPast, isAdmin, onSaveResult }) {
+function GameRow({ game, goals, members, getMemberName, getGameTitle, isPast, isAdmin, onSaveResult, onSelectEvent }) {
   const [editing, setEditing] = useState(false)
   const [teamScore, setTeamScore] = useState(game.team_score?.toString() || '')
   const [oppScore, setOppScore] = useState(game.opponent_score?.toString() || '')
@@ -217,7 +219,10 @@ function GameRow({ game, goals, members, getMemberName, getGameTitle, isPast, is
 
   return (
     <div className="border-b border-stone-100 last:border-b-0">
-      <div className="px-4 py-3 flex items-center justify-between">
+      <div
+        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-stone-50 transition-colors"
+        onClick={() => onSelectEvent && onSelectEvent(game.id)}
+      >
         <div className="flex-1 min-w-0">
           <div className="font-medium text-stone-900 text-sm">{getGameTitle(game)}</div>
           <div className="text-xs text-stone-500 mt-0.5">
@@ -251,7 +256,7 @@ function GameRow({ game, goals, members, getMemberName, getGameTitle, isPast, is
           )}
           {isAdmin && isPast && (
             <button
-              onClick={() => setEditing(!editing)}
+              onClick={(e) => { e.stopPropagation(); setEditing(!editing) }}
               className="text-stone-400 hover:text-violet-600 transition-colors p-1"
               title={hasScore ? 'Edit result' : 'Add result'}
             >
