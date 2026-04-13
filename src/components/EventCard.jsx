@@ -51,7 +51,7 @@ export default function EventCard({
 
   // Get member names for goal display
   const goalScorerNames = goals.map(g => {
-    const member = members.find(m => m.id === g.userId)
+    const member = members.find(m => m.id === g.scorer_id)
     return member?.name || 'Unknown'
   })
 
@@ -60,12 +60,9 @@ export default function EventCard({
       onClick={onClick}
       className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6 space-y-4"
     >
-      {/* Top Row: Badges and Score */}
+      {/* Top Row: Today badge and Score */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-semibold px-2 py-1 rounded-md ${typeBg}`}>
-            {event.type}
-          </span>
           {isToday && (
             <span className="text-xs font-semibold px-2 py-1 rounded-md bg-blue-100 text-blue-700">
               TODAY

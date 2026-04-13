@@ -52,9 +52,9 @@ export default function EventDetail({
 
   // Goal scorers with details
   const goalDetails = goals.map(g => ({
-    name: getMemberName(g.userId),
+    name: getMemberName(g.scorer_id),
     minute: g.minute,
-    assist: g.assist ? getMemberName(g.assist) : null,
+    assist: g.assist_id ? getMemberName(g.assist_id) : null,
   }))
 
   // Title display logic
@@ -85,11 +85,6 @@ export default function EventDetail({
           {/* Header */}
           <div className="flex items-start justify-between p-6 border-b border-gray-100">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-3">
-                <span className={`text-xs font-semibold px-2 py-1 rounded-md ${typeBg}`}>
-                  {event.type}
-                </span>
-              </div>
               <h2 className="text-2xl font-bold text-gray-900">{mainTitle}</h2>
               {subtitle && (
                 <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
@@ -218,7 +213,7 @@ export default function EventDetail({
                         key={rsvp.id}
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700"
                       >
-                        {getMemberName(rsvp.userId)}
+                        {getMemberName(rsvp.member_id)}
                       </span>
                     ))}
                   </div>
@@ -236,7 +231,7 @@ export default function EventDetail({
                         key={rsvp.id}
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-700"
                       >
-                        {getMemberName(rsvp.userId)}
+                        {getMemberName(rsvp.member_id)}
                       </span>
                     ))}
                   </div>
@@ -254,7 +249,7 @@ export default function EventDetail({
                         key={rsvp.id}
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700"
                       >
-                        {getMemberName(rsvp.userId)}
+                        {getMemberName(rsvp.member_id)}
                       </span>
                     ))}
                   </div>
