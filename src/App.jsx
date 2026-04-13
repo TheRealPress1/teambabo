@@ -144,6 +144,8 @@ export default function App() {
             templateLineups={team.getTemplateLineups()}
             onCreateLineup={() => { setEditingLineup(null); setModal('templateLineup') }}
             onEditLineup={(l) => { setEditingLineup(l); setModal('templateLineup') }}
+            rsvps={team.rsvps}
+            events={team.events}
           />
         )}
         {tab === 'stats' && (
