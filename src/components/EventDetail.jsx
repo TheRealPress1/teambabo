@@ -262,9 +262,20 @@ export default function EventDetail({
           <div className="border-t border-gray-100 p-6 bg-gray-50 rounded-b-2xl flex items-center justify-between gap-3">
             <button
               onClick={onDownloadICS}
-              className="flex-1 py-2 px-4 rounded-lg font-medium text-sm bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+              className="py-2 px-3 rounded-lg transition-colors hover:bg-gray-200"
+              title="Add to Google Calendar"
             >
-              Add to Google Calendar
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M18.316 5.684H24v12.632h-5.684V5.684z" fill="#1967D2"/>
+                <path d="M0 18.316h5.684V5.684H0v12.632z" fill="#188038"/>
+                <path d="M18.316 24V18.316H5.684V24h12.632z" fill="#1967D2"/>
+                <path d="M5.684 18.316H0V24h5.684v-5.684z" fill="#1967D2"/>
+                <path d="M18.316 0H5.684v5.684h12.632V0z" fill="#EA4335"/>
+                <path d="M24 5.684V0h-5.684v5.684H24z" fill="#EA4335"/>
+                <path d="M5.684 0H0v5.684h5.684V0z" fill="#EA4335"/>
+                <path d="M18.316 5.684H5.684v12.632h12.632V5.684z" fill="#fff"/>
+                <path d="M9.2 15.348a3.06 3.06 0 01-1.272-.87l.87-.87c.24.35.66.66 1.2.66.54 0 .96-.3.96-.78 0-.48-.42-.78-.96-.78h-.6v-1.08h.54c.48 0 .84-.3.84-.72 0-.42-.36-.72-.84-.72-.42 0-.78.24-1.02.54l-.84-.84c.42-.48 1.02-.78 1.86-.78 1.14 0 1.92.66 1.92 1.62 0 .6-.36 1.08-.84 1.32.54.24.96.72.96 1.38 0 1.02-.84 1.74-2.04 1.74h-.18zm4.2-.12V9.828l-1.32.78-.54-.96 2.1-1.26h1.02v6.84h-1.26z" fill="#1967D2"/>
+              </svg>
             </button>
 
             {isAdmin && event.type === 'Game' && (

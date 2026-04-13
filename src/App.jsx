@@ -8,6 +8,7 @@ import Stats from './components/Stats'
 import EventDetail from './components/EventDetail'
 import AddEvent from './components/AddEvent'
 import AddResult from './components/AddResult'
+import EditProfile from './components/EditProfile'
 
 const TABS = [
   { id: 'schedule', label: 'Schedule' },
@@ -78,9 +79,9 @@ export default function App() {
               </button>
             )}
             <button
-              onClick={team.logout}
+              onClick={() => setModal('editProfile')}
               className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-lg hover:bg-gray-200 transition-colors overflow-hidden"
-              title="Log out"
+              title="Edit profile"
             >
               {team.myInfo?.avatar_url ? (
                 <img src={team.myInfo.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -175,6 +176,15 @@ export default function App() {
             setSelectedEventId(null)
           }}
           onDownloadICS={() => openGoogleCalendar(selectedEvent)}
+        />
+      )}
+
+      {modal === 'editProfile' && (
+        <EditProfile
+          myInfo={team.myInfo}
+          onSave={team.updateProfile}
+          onLogout={() => { setModal(null); team.logout() }}
+          onClose={() => setModal(null)}
         />
       )}
 
