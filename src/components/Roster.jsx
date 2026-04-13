@@ -2,12 +2,16 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
   const coaches = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
-  // Attendance: going / total events. No RSVP = not attended.
-  const totalEvents = events.length
+  // Attendance: only count events from 2026-04-13 onwards. No RSVP = not attended.
+  const cutoffDate = '2026-04-13'
+  const trackedEvents = events.filter(e => e.date >= cutoffDate)
+  const trackedEventIds = new Set(trackedEvents.map(e => e.id))
   const getAttendance = (memberId) => {
-    if (totalEvents === 0) return null
-    const going = rsvps.filter(r => r.member_id === memberId && r.status === 'going').length
-    return Math.round((going / totalEvents) * 100)
+    if (trackedEvents.length === 0) return null
+    const going = rsvps.filter(r =>
+      r.member_id === memberId && r.status === 'going' && trackedEventIds.has(r.event_id)
+    ).length
+    return Math.round((going / trackedEvents.length) * 100)
   }
 
   const MemberRow = ({ member }) => {
