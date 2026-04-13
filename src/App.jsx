@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTeam } from './lib/useTeam'
-import { isPast, isToday, openGoogleCalendar } from './lib/utils'
+import { isPast, isToday, openGoogleCalendar, openOutlookCalendar } from './lib/utils'
 import AuthScreen from './components/AuthScreen'
 import Schedule from './components/Schedule'
 import Roster from './components/Roster'
@@ -175,7 +175,8 @@ export default function App() {
             setModal(null)
             setSelectedEventId(null)
           }}
-          onDownloadICS={() => openGoogleCalendar(selectedEvent)}
+          onGoogleCal={() => openGoogleCalendar(selectedEvent)}
+          onOutlookCal={() => openOutlookCalendar(selectedEvent)}
         />
       )}
 
