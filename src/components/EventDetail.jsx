@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { fmtDateLong, fmtTime } from '../lib/utils'
+import LocationInput from './LocationInput'
 
 export default function EventDetail({
   event,
@@ -176,7 +177,12 @@ export default function EventDetail({
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 mb-1">Location</label>
-                  <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} placeholder="Location" className={inputClass} />
+                  <LocationInput
+                    value={editLocation}
+                    onChange={setEditLocation}
+                    placeholder="Location"
+                    className={inputClass}
+                  />
                 </div>
 
                 {event.type === 'Game' && (
@@ -225,8 +231,19 @@ export default function EventDetail({
                     </span>
                   </div>
                   {event.location && (
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <span>{event.location}</span>
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-violet-600 hover:text-violet-800 underline underline-offset-2 flex items-center gap-1.5 text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {event.location}
+                      </a>
                     </div>
                   )}
                 </div>

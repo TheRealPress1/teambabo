@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LocationInput from './LocationInput';
 
 export default function AddEvent({ onSubmit, onClose }) {
   const [type, setType] = useState('game');
@@ -158,11 +159,9 @@ export default function AddEvent({ onSubmit, onClose }) {
             <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
               Location
             </label>
-            <input
-              id="location"
-              type="text"
+            <LocationInput
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={setLocation}
               placeholder="e.g., Babson Field"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
             />
