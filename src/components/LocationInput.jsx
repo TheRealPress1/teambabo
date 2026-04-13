@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
@@ -44,6 +45,21 @@ export default function LocationInput({ value, onChange, placeholder, className 
       .catch(() => {})
   }, [])
 
+  const [dropdownStyle, setDropdownStyle] = useState({})
+
+  // Position dropdown relative to input
+  const updatePosition = useCallback(() => {
+    if (!inputRef.current) return
+    const rect = inputRef.current.getBoundingClientRect()
+    setDropdownStyle({
+      position: 'fixed',
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 9999,
+    })
+  }, [])
+
   // Close suggestions on outside click
   useEffect(() => {
     const handleClick = (e) => {
@@ -77,6 +93,7 @@ export default function LocationInput({ value, onChange, placeholder, className 
     setQuery(val)
     onChange(val)
     setShowSuggestions(true)
+    updatePosition()
     fetchSuggestions(val)
   }
 
@@ -108,13 +125,17 @@ export default function LocationInput({ value, onChange, placeholder, className 
         type="text"
         value={query}
         onChange={handleInputChange}
-        onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true) }}
+        onFocus={() => { updatePosition(); if (suggestions.length > 0) setShowSuggestions(true) }}
         placeholder={placeholder}
         className={className}
         autoComplete="off"
       />
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+      {showSuggestions && suggestions.length > 0 && createPortal(
+        <ul
+          style={dropdownStyle}
+          className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
+          onMouseDown={(e) => e.preventDefault()}
+        >
           {suggestions.map((s) => (
             <li key={s.place_id}>
               <button
@@ -133,7 +154,8 @@ export default function LocationInput({ value, onChange, placeholder, className 
               </button>
             </li>
           ))}
-        </ul>
+        </ul>,
+        document.body
       )}
     </div>
   )
