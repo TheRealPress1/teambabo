@@ -128,7 +128,7 @@ export default function CalendarView({
   // Week mode helpers
   const getWeekDays = () => {
     return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(start)
+      const d = new Date(selectedWeekStart)
       d.setDate(d.getDate() + i)
       return d
     })
