@@ -79,13 +79,13 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
       {/* Header */}
       <div className="px-4 py-4 border-b border-stone-100 bg-stone-50">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">Roster</h2>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-stone-400 font-medium">Attendance Record</span>
+            <h2 className="text-lg font-bold text-stone-900">Roster</h2>
             <span className="text-sm px-2.5 py-1 bg-violet-100 text-violet-700 rounded-full font-medium">
               {members.length}
             </span>
           </div>
+          <span className="text-xs text-stone-400 font-medium">Attendance Record</span>
         </div>
       </div>
 
