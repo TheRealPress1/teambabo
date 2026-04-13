@@ -51,5 +51,31 @@ export function openGoogleCalendar(ev) {
   window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank')
 }
 
+export function openOutlookCalendar(ev) {
+  const title = ev.type === 'Game'
+    ? `${ev.home_away === 'home' ? 'vs' : '@'} ${ev.opponent || 'TBD'}`
+    : ev.title
+
+  const fmtDt = (date, time) => {
+    if (!time) return `${date}T00:00:00`
+    return `${date}T${time}:00`
+  }
+
+  const start = fmtDt(ev.date, ev.time)
+  const end = fmtDt(ev.date, ev.end_time || ev.time)
+
+  const params = new URLSearchParams({
+    rru: 'addevent',
+    subject: title,
+    startdt: start,
+    enddt: end,
+    location: ev.location || '',
+    body: ev.notes || '',
+    path: '/calendar/action/compose',
+  })
+
+  window.open(`https://outlook.live.com/calendar/0/action/compose?${params}`, '_blank')
+}
+
 export const EMOJIS = ['⚽', '🏆', '🥅', '🦁', '💪', '🔥', '⭐', '🎯', '👑', '🐉', '🦅', '🐺', '🦈', '🎖️', '💎']
 export const POSITIONS = ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST', 'CF', 'LM', 'RM']
