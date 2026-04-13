@@ -10,8 +10,12 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote })
       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-lg font-semibold text-stone-700">
-            {member.name.charAt(0).toUpperCase()}
+          <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-lg font-semibold text-stone-700 overflow-hidden">
+            {member.avatar_url ? (
+              <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              member.name.charAt(0).toUpperCase()
+            )}
           </div>
 
           {/* Info */}
