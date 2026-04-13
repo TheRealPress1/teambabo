@@ -2,12 +2,16 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
   const coaches = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
-  // Calculate attendance: going = yes, maybe/cant = no
+  // Attendance: only count events from 2026-04-13 onwards. No RSVP = not attended.
+  const cutoffDate = '2026-04-13'
+  const trackedEvents = events.filter(e => e.date >= cutoffDate)
+  const trackedEventIds = new Set(trackedEvents.map(e => e.id))
   const getAttendance = (memberId) => {
-    const memberRsvps = rsvps.filter(r => r.member_id === memberId)
-    if (memberRsvps.length === 0) return null
-    const going = memberRsvps.filter(r => r.status === 'going').length
-    return Math.round((going / memberRsvps.length) * 100)
+    if (trackedEvents.length === 0) return null
+    const going = rsvps.filter(r =>
+      r.member_id === memberId && r.status === 'going' && trackedEventIds.has(r.event_id)
+    ).length
+    return Math.round((going / trackedEvents.length) * 100)
   }
 
   const MemberRow = ({ member }) => {
@@ -78,9 +82,12 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
       <div className="px-4 py-4 border-b border-stone-100 bg-stone-50">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-stone-900">Roster</h2>
-          <span className="text-sm px-2.5 py-1 bg-violet-100 text-violet-700 rounded-full font-medium">
-            {members.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-stone-400 font-medium">Attendance Record</span>
+            <span className="text-sm px-2.5 py-1 bg-violet-100 text-violet-700 rounded-full font-medium">
+              {members.length}
+            </span>
+          </div>
         </div>
       </div>
 
