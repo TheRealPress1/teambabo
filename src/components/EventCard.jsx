@@ -135,10 +135,12 @@ export default function EventCard({
 
       {/* RSVP Section (Upcoming Events) */}
       {!isPast && (
-        <div className="pt-4 border-t border-gray-100">
+        <div className="pt-4 border-t border-gray-100 relative z-10">
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={e => {
+                e.preventDefault()
                 e.stopPropagation()
                 onRsvp(event.id, 'going')
               }}
@@ -151,7 +153,9 @@ export default function EventCard({
               Going ({goingCount})
             </button>
             <button
+              type="button"
               onClick={e => {
+                e.preventDefault()
                 e.stopPropagation()
                 onRsvp(event.id, 'maybe')
               }}
@@ -164,7 +168,9 @@ export default function EventCard({
               Maybe ({maybeCount})
             </button>
             <button
+              type="button"
               onClick={e => {
+                e.preventDefault()
                 e.stopPropagation()
                 onRsvp(event.id, 'cant')
               }}
