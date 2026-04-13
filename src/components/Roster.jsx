@@ -4,7 +4,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
 
   const MemberRow = ({ member }) => {
     const isMe = member.id === me;
-    const isAdmin = member.role === 'admin';
+    const memberIsAdmin = member.role === 'admin';
 
     return (
       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
@@ -23,7 +23,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
             <div className="flex items-center gap-2">
               <span className="font-semibold text-stone-900">{member.name}</span>
               {isMe && <span className="text-xs text-stone-500">(you)</span>}
-              {isAdmin && (
+              {memberIsAdmin && (
                 <span className="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full font-medium">
                   Admin
                 </span>
@@ -39,7 +39,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
         </div>
 
         {/* Promote button */}
-        {isAdmin && !isMe && !isAdmin && (
+        {isAdmin && !isMe && !memberIsAdmin && (
           <button
             onClick={() => onPromote(member.id)}
             className="text-xs px-3 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium rounded transition-colors"
