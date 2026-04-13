@@ -38,6 +38,8 @@ export default function EventDetail({
   const maybeRsvps = rsvps.filter(r => r.status === 'maybe')
   const cantRsvps = rsvps.filter(r => r.status === 'cant')
 
+  const getMember = (memberId) => members.find(m => m.id === memberId)
+
   const getMemberName = (memberId) => {
     const member = members.find(m => m.id === memberId)
     return member?.name || 'Unknown'
@@ -340,14 +342,19 @@ export default function EventDetail({
                         Going ({goingRsvps.length})
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {goingRsvps.map(rsvp => (
-                          <span
-                            key={rsvp.id}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700"
-                          >
-                            {getMemberName(rsvp.member_id)}
-                          </span>
-                        ))}
+                        {goingRsvps.map(rsvp => {
+                          const m = getMember(rsvp.member_id)
+                          return (
+                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+                              {m?.avatar_url ? (
+                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                              ) : (
+                                <span className="w-5 h-5 rounded-full bg-green-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
+                              )}
+                              {m?.name || 'Unknown'}
+                            </span>
+                          )
+                        })}
                       </div>
                     </div>
                   )}
@@ -358,14 +365,19 @@ export default function EventDetail({
                         Maybe ({maybeRsvps.length})
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {maybeRsvps.map(rsvp => (
-                          <span
-                            key={rsvp.id}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-700"
-                          >
-                            {getMemberName(rsvp.member_id)}
-                          </span>
-                        ))}
+                        {maybeRsvps.map(rsvp => {
+                          const m = getMember(rsvp.member_id)
+                          return (
+                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-700">
+                              {m?.avatar_url ? (
+                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                              ) : (
+                                <span className="w-5 h-5 rounded-full bg-amber-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
+                              )}
+                              {m?.name || 'Unknown'}
+                            </span>
+                          )
+                        })}
                       </div>
                     </div>
                   )}
@@ -376,14 +388,19 @@ export default function EventDetail({
                         Not Going ({cantRsvps.length})
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {cantRsvps.map(rsvp => (
-                          <span
-                            key={rsvp.id}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700"
-                          >
-                            {getMemberName(rsvp.member_id)}
-                          </span>
-                        ))}
+                        {cantRsvps.map(rsvp => {
+                          const m = getMember(rsvp.member_id)
+                          return (
+                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">
+                              {m?.avatar_url ? (
+                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                              ) : (
+                                <span className="w-5 h-5 rounded-full bg-red-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
+                              )}
+                              {m?.name || 'Unknown'}
+                            </span>
+                          )
+                        })}
                       </div>
                     </div>
                   )}
