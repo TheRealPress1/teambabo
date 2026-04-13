@@ -296,6 +296,7 @@ export default function EventDetail({
                     <div className="text-sm font-semibold text-gray-700 mb-3">Your Availability</div>
                     <div className="flex gap-3">
                       <button
+                        type="button"
                         onClick={() => onRsvp(event.id, 'going')}
                         className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
                           myRsvp?.status === 'going'
@@ -306,6 +307,7 @@ export default function EventDetail({
                         Going
                       </button>
                       <button
+                        type="button"
                         onClick={() => onRsvp(event.id, 'maybe')}
                         className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
                           myRsvp?.status === 'maybe'
@@ -316,6 +318,7 @@ export default function EventDetail({
                         Maybe
                       </button>
                       <button
+                        type="button"
                         onClick={() => onRsvp(event.id, 'cant')}
                         className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
                           myRsvp?.status === 'cant'
