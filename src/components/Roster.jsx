@@ -61,16 +61,14 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
               {attendance}%
             </span>
           )}
-
-        {/* Promote button */}
-        {isAdmin && !isMe && !memberIsAdmin && (
-          <button
-            onClick={() => onPromote(member.id)}
-            className="text-xs px-3 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium rounded transition-colors"
-          >
-            Make admin
-          </button>
-        )}
+          {isAdmin && !isMe && !memberIsAdmin && (
+            <button
+              onClick={() => onPromote(member.id)}
+              className="text-xs px-3 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium rounded transition-colors"
+            >
+              Make admin
+            </button>
+          )}
         </div>
       </div>
     );
