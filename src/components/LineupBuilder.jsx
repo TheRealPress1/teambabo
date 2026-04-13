@@ -89,7 +89,7 @@ export default function LineupBuilder({
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" onClick={onClose} />
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div
-          className="bg-white rounded-2xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-2xl shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -204,9 +204,10 @@ export default function LineupBuilder({
             <div className="flex-1 p-4">
               <div
                 ref={fieldRef}
-                className="relative w-full rounded-xl overflow-hidden"
+                className="relative w-full rounded-xl overflow-hidden mx-auto"
                 style={{
                   aspectRatio: '68 / 105',
+                  maxHeight: '60vh',
                   background: 'linear-gradient(to bottom, #2d8a4e, #34a853, #2d8a4e)',
                 }}
               >

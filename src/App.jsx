@@ -150,6 +150,7 @@ export default function App() {
             members={team.members}
             isAdmin={team.isAdmin}
             onSaveResult={team.saveResult}
+            onSelectEvent={handleSelectEvent}
           />
         )}
       </main>
