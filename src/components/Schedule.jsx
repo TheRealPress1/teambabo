@@ -36,14 +36,17 @@ export default function Schedule({
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
+  // Parse date string as local time (not UTC)
+  const localDate = (d) => new Date(d + 'T00:00:00')
+
   // Partition events into upcoming and past
   const upcomingEvents = events
-    .filter(e => new Date(e.date) >= today)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .filter(e => localDate(e.date) >= today)
+    .sort((a, b) => localDate(a.date) - localDate(b.date))
 
   const pastEvents = events
-    .filter(e => new Date(e.date) < today)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .filter(e => localDate(e.date) < today)
+    .sort((a, b) => localDate(b.date) - localDate(a.date))
 
   const renderEventCards = (eventList, isPast = false) => {
     if (eventList.length === 0) return null
@@ -53,7 +56,7 @@ export default function Schedule({
       const eventGoals = goals.filter(g => g.event_id === event.id)
       const myRsvp = eventRsvps.find(r => r.member_id === me)
 
-      const eventDate = new Date(event.date)
+      const eventDate = localDate(event.date)
       const isToday =
         eventDate.getFullYear() === today.getFullYear() &&
         eventDate.getMonth() === today.getMonth() &&
