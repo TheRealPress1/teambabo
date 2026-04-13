@@ -84,7 +84,7 @@ export default function AddResult({ event, members, existingGoals, onSubmit, onC
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1">
-                <label style={{ ...labelStyle, textAlign: 'center' }}>TeamBabo</label>
+                <label style={{ ...labelStyle, textAlign: 'center' }}>Babson</label>
                 <input
                   type="number"
                   min="0"
