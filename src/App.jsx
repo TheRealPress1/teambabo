@@ -170,6 +170,7 @@ export default function App() {
           onRsvp={team.setRsvp}
           onClose={() => { setModal(null); setSelectedEventId(null) }}
           onAddResult={handleAddResult}
+          onUpdateEvent={team.updateEvent}
           onDelete={async (id) => {
             await team.deleteEvent(id)
             setModal(null)
