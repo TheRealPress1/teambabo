@@ -12,6 +12,19 @@ export default function EventCard({
   onRsvp,
   onClick,
 }) {
+  // Days until event
+  let daysLabel = null
+  if (!isPast) {
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+    const eventDate = new Date(event.date + 'T00:00:00')
+    const diffMs = eventDate - now
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays === 0) daysLabel = null // TODAY badge handles this
+    else if (diffDays === 1) daysLabel = 'Tomorrow'
+    else daysLabel = `In ${diffDays} days`
+  }
+
   // Type badge colors
   const typeBadgeStyles = {
     Game: 'bg-violet-100 text-violet-700',
@@ -70,6 +83,11 @@ export default function EventCard({
           )}
         </div>
 
+        {daysLabel && (
+          <span className="text-xs font-medium text-gray-400">
+            {daysLabel}
+          </span>
+        )}
         {resultDisplay && <div>{resultDisplay}</div>}
       </div>
 
