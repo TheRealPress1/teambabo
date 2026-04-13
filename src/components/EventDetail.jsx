@@ -264,7 +264,7 @@ export default function EventDetail({
               onClick={onDownloadICS}
               className="flex-1 py-2 px-4 rounded-lg font-medium text-sm bg-violet-600 text-white hover:bg-violet-700 transition-colors"
             >
-              Add to Calendar
+              Add to Google Calendar
             </button>
 
             {isAdmin && event.type === 'Game' && (
