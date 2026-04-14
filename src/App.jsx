@@ -146,7 +146,6 @@ export default function App() {
             onEditLineup={(l) => { setEditingLineup(l); setModal('templateLineup') }}
             rsvps={team.rsvps}
             events={team.events}
-            onUpdateMemberPhone={team.updateMemberPhone}
           />
         )}
         {tab === 'stats' && (

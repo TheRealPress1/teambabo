@@ -66,7 +66,7 @@ export function useTeam() {
   }, [loadAll])
 
   // Auth actions
-  const signUp = async ({ email, password, name, jerseyNumber, position, emoji, avatarFile }) => {
+  const signUp = async ({ email, password, name, jerseyNumber, position, emoji, avatarFile, phone }) => {
     const { data: authData, error: authError } = await supabase.auth.signUp({ email, password })
     if (authError) return { error: authError.message }
     if (!authData.user) return { error: 'Sign up failed' }
@@ -90,6 +90,7 @@ export function useTeam() {
       position: position || '',
       avatar_emoji: emoji || '⚽',
       avatar_url: avatarUrl,
+      phone: phone || null,
       role: 'player',
     })
     if (memberError) return { error: memberError.message }

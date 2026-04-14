@@ -393,8 +393,8 @@ export default function EventDetail({
                                     </button>
                                   )}
                                   {m?.phone && (
-                                    <a href={`sms:${m.phone}`} className="block w-full text-left px-3 py-2 text-sm hover:bg-violet-50 text-violet-700 border-t border-gray-100">
-                                      Text {m.name.split(' ')[0]}
+                                    <a href={`https://wa.me/${m.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="block w-full text-left px-3 py-2 text-sm hover:bg-green-50 text-green-700 border-t border-gray-100">
+                                      WhatsApp {m.name.split(' ')[0]}
                                     </a>
                                   )}
                                 </div>
