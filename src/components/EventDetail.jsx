@@ -473,6 +473,19 @@ export default function EventDetail({
                   </div>
                 </div>
 
+                {/* Admin Actions */}
+                {isAdmin && event.type?.toLowerCase() === 'game' && (
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={onAddResult}
+                      className="flex-1 py-2 px-4 rounded-lg font-medium text-sm bg-gray-200 text-gray-900 hover:bg-gray-300 transition-colors"
+                    >
+                      {event.team_score !== null ? 'Edit Result' : 'Add Result'}
+                    </button>
+                  </div>
+                )}
+
                 {/* Lineup Button */}
                 {event.type?.toLowerCase() === 'game' && (lineup?.status === 'published' || isAdmin) && (
                   <div>
