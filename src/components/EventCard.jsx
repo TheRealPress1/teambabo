@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { fmtDate, fmtTime } from '../lib/utils'
 
 export default function EventCard({
@@ -60,6 +60,16 @@ export default function EventCard({
   if (event.type?.toLowerCase() === 'game' && event.opponent) {
     const prefix = event.home_away === 'home' ? 'vs' : '@'
     titleDisplay = `${prefix} ${event.opponent}`
+  }
+
+  // Members who haven't responded
+  const respondedIds = new Set(rsvps.map(r => r.member_id))
+  const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id)) : []
+
+  const [shownName, setShownName] = useState(null)
+  const handleAvatarTap = (name) => {
+    setShownName(name)
+    setTimeout(() => setShownName(null), 3000)
   }
 
   // Get member names for goal display
@@ -182,6 +192,39 @@ export default function EventCard({
             >
               Can&apos;t ({cantCount})
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Not Responded Section (Upcoming Events) */}
+      {!isPast && notResponded.length > 0 && (
+        <div className="relative" onClick={e => e.stopPropagation()}>
+          <div className="text-[10px] font-semibold text-gray-400 uppercase mb-1.5">
+            Not responded ({notResponded.length})
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {notResponded.map(m => (
+              <div
+                key={m.id}
+                className="relative group"
+                onClick={() => handleAvatarTap(m.name)}
+                onMouseEnter={() => setShownName(m.name)}
+                onMouseLeave={() => setShownName(null)}
+              >
+                <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-500 overflow-hidden cursor-pointer">
+                  {m.avatar_url ? (
+                    <img src={m.avatar_url} alt="" className="w-full h-full object-cover opacity-50" />
+                  ) : (
+                    m.name.charAt(0)
+                  )}
+                </div>
+                {shownName === m.name && (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-[10px] font-medium rounded whitespace-nowrap z-20">
+                    {m.name}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
