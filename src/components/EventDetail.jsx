@@ -19,8 +19,10 @@ export default function EventDetail({
   onOutlookCal,
   onLineup,
   lineup,
+  onSetRsvpForMember,
 }) {
   const [editing, setEditing] = useState(false)
+  const [adminRsvpMenu, setAdminRsvpMenu] = useState(null) // { memberId, currentStatus }
   const [editTitle, setEditTitle] = useState(event.title || '')
   const [editDate, setEditDate] = useState(event.date || '')
   const [editTime, setEditTime] = useState(event.time || '')
@@ -339,74 +341,70 @@ export default function EventDetail({
 
                 {/* Attendee Lists */}
                 <div className="pt-2 border-t border-gray-100 space-y-4">
-                  {goingRsvps.length > 0 && (
-                    <div>
+                  {[
+                    { label: 'Going', list: goingRsvps, status: 'going', bg: 'bg-green-100', text: 'text-green-700', avatarBg: 'bg-green-200' },
+                    { label: 'Maybe', list: maybeRsvps, status: 'maybe', bg: 'bg-amber-100', text: 'text-amber-700', avatarBg: 'bg-amber-200' },
+                    { label: 'Not Going', list: cantRsvps, status: 'cant', bg: 'bg-red-100', text: 'text-red-700', avatarBg: 'bg-red-200' },
+                  ].filter(g => g.list.length > 0).map(group => (
+                    <div key={group.status}>
                       <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                        Going ({goingRsvps.length})
+                        {group.label} ({group.list.length})
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {goingRsvps.map(rsvp => {
+                        {group.list.map(rsvp => {
                           const m = getMember(rsvp.member_id)
+                          const isMenuOpen = adminRsvpMenu?.memberId === rsvp.member_id
                           return (
-                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                              {m?.avatar_url ? (
-                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
-                              ) : (
-                                <span className="w-5 h-5 rounded-full bg-green-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
+                            <div key={rsvp.id} className="relative">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isAdmin && onSetRsvpForMember) {
+                                    setAdminRsvpMenu(isMenuOpen ? null : { memberId: rsvp.member_id, currentStatus: group.status })
+                                  }
+                                }}
+                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${group.bg} ${group.text} ${isAdmin ? 'cursor-pointer hover:opacity-80' : ''}`}
+                              >
+                                {m?.avatar_url ? (
+                                  <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                                ) : (
+                                  <span className={`w-5 h-5 rounded-full ${group.avatarBg} flex items-center justify-center text-[10px] font-bold`}>{m?.name?.charAt(0)}</span>
+                                )}
+                                {m?.name || 'Unknown'}
+                              </button>
+                              {isAdmin && isMenuOpen && (
+                                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-30 w-44 overflow-hidden">
+                                  {group.status !== 'going' && (
+                                    <button type="button" onClick={() => { onSetRsvpForMember(event.id, rsvp.member_id, 'going'); setAdminRsvpMenu(null) }}
+                                      className="w-full text-left px-3 py-2 text-sm hover:bg-green-50 text-green-700">
+                                      Move to Going
+                                    </button>
+                                  )}
+                                  {group.status !== 'maybe' && (
+                                    <button type="button" onClick={() => { onSetRsvpForMember(event.id, rsvp.member_id, 'maybe'); setAdminRsvpMenu(null) }}
+                                      className="w-full text-left px-3 py-2 text-sm hover:bg-amber-50 text-amber-700">
+                                      Move to Maybe
+                                    </button>
+                                  )}
+                                  {group.status !== 'cant' && (
+                                    <button type="button" onClick={() => { onSetRsvpForMember(event.id, rsvp.member_id, 'cant'); setAdminRsvpMenu(null) }}
+                                      className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 text-red-700">
+                                      Move to Can&apos;t Go
+                                    </button>
+                                  )}
+                                  {m?.phone && (
+                                    <a href={`sms:${m.phone}`} className="block w-full text-left px-3 py-2 text-sm hover:bg-violet-50 text-violet-700 border-t border-gray-100">
+                                      Text {m.name.split(' ')[0]}
+                                    </a>
+                                  )}
+                                </div>
                               )}
-                              {m?.name || 'Unknown'}
-                            </span>
+                            </div>
                           )
                         })}
                       </div>
                     </div>
-                  )}
-
-                  {maybeRsvps.length > 0 && (
-                    <div>
-                      <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                        Maybe ({maybeRsvps.length})
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {maybeRsvps.map(rsvp => {
-                          const m = getMember(rsvp.member_id)
-                          return (
-                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-700">
-                              {m?.avatar_url ? (
-                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
-                              ) : (
-                                <span className="w-5 h-5 rounded-full bg-amber-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
-                              )}
-                              {m?.name || 'Unknown'}
-                            </span>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {cantRsvps.length > 0 && (
-                    <div>
-                      <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                        Not Going ({cantRsvps.length})
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {cantRsvps.map(rsvp => {
-                          const m = getMember(rsvp.member_id)
-                          return (
-                            <span key={rsvp.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">
-                              {m?.avatar_url ? (
-                                <img src={m.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
-                              ) : (
-                                <span className="w-5 h-5 rounded-full bg-red-200 flex items-center justify-center text-[10px] font-bold">{m?.name?.charAt(0)}</span>
-                              )}
-                              {m?.name || 'Unknown'}
-                            </span>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </>
             )}

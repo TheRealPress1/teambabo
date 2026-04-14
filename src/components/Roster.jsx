@@ -1,4 +1,8 @@
-export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup, rsvps = [], events = [] }) {
+import { useState } from 'react'
+
+export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup, rsvps = [], events = [], onUpdateMemberPhone }) {
+  const [editingPhone, setEditingPhone] = useState(null) // memberId
+  const [phoneValue, setPhoneValue] = useState('')
   const coaches = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
@@ -47,7 +51,42 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
               <span className="text-xs px-2 py-0.5 bg-stone-100 text-stone-700 rounded">
                 {member.position}
               </span>
+              {isAdmin && member.phone && (
+                <a href={`sms:${member.phone}`} className="text-violet-600 hover:text-violet-800" title={`Text ${member.name}`}>
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </a>
+              )}
+              {isAdmin && !member.phone && (
+                <button
+                  onClick={() => { setEditingPhone(member.id); setPhoneValue('') }}
+                  className="text-[10px] text-stone-400 hover:text-violet-600"
+                  title="Add phone"
+                >
+                  + phone
+                </button>
+              )}
             </div>
+            {editingPhone === member.id && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <input
+                  type="tel"
+                  value={phoneValue}
+                  onChange={e => setPhoneValue(e.target.value)}
+                  placeholder="+1 (555) 123-4567"
+                  className="px-2 py-1 text-xs border border-stone-200 rounded-lg w-36 focus:outline-none focus:ring-1 focus:ring-violet-400"
+                  autoFocus
+                />
+                <button
+                  onClick={async () => { await onUpdateMemberPhone(member.id, phoneValue); setEditingPhone(null) }}
+                  className="text-xs px-2 py-1 bg-violet-600 text-white rounded-lg font-medium"
+                >
+                  Save
+                </button>
+                <button onClick={() => setEditingPhone(null)} className="text-xs text-stone-400">Cancel</button>
+              </div>
+            )}
           </div>
         </div>
 
