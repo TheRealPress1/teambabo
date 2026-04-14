@@ -77,6 +77,7 @@ export default function Schedule({
           members={members}
           isPast={isPast}
           isToday={isToday}
+          isAdmin={isAdmin}
           onRsvp={onRsvp}
           onClick={() => onSelectEvent(event.id)}
         />

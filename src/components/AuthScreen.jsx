@@ -18,6 +18,7 @@ export default function AuthScreen({ onSignUp, onLogin }) {
   const [name, setName] = useState('')
   const [jerseyNumber, setJerseyNumber] = useState('')
   const [position, setPosition] = useState('')
+  const [phone, setPhone] = useState('')
   const emoji = '⚽'
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState(null)
@@ -75,10 +76,14 @@ export default function AuthScreen({ onSignUp, onLogin }) {
       setError('Please upload a profile photo')
       return
     }
+    if (!phone.trim()) {
+      setError('Please enter your phone number')
+      return
+    }
     setSubmitting(true)
     const result = await onSignUp({
       email, password, name: name.trim(),
-      jerseyNumber, position, emoji, avatarFile,
+      jerseyNumber, position, emoji, avatarFile, phone: phone.trim(),
     })
     if (result?.error) setError(result.error)
     setSubmitting(false)
@@ -286,6 +291,18 @@ export default function AuthScreen({ onSignUp, onLogin }) {
                   {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Phone Number *</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="+1 (555) 123-4567"
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200"
+              />
             </div>
 
             <button
