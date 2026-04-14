@@ -24,6 +24,7 @@ export default function LineupBuilder({
   const [status, setStatus] = useState(lineup?.status || 'draft')
   const [saving, setSaving] = useState(false)
   const [draggedMember, setDraggedMember] = useState(null)
+  const [activeSlot, setActiveSlot] = useState(null) // for mobile tap-to-assign
   const fieldRef = useRef(null)
   const isTemplate = !event
 
@@ -63,6 +64,33 @@ export default function LineupBuilder({
 
   const handleRemoveFromSlot = (slotIndex) => {
     setSlots(prev => prev.map((s, i) => i === slotIndex ? { ...s, memberId: null } : s))
+    setActiveSlot(null)
+  }
+
+  // Mobile: tap a position to select it, then pick a player
+  const handleSlotTap = (slotIndex) => {
+    if (readOnly) return
+    const slot = slots[slotIndex]
+    if (slot.memberId) {
+      // Already assigned — toggle remove mode
+      setActiveSlot(activeSlot === slotIndex ? null : slotIndex)
+    } else {
+      // Empty — open player picker
+      setActiveSlot(slotIndex)
+    }
+  }
+
+  const handleMobileAssign = (memberId) => {
+    if (activeSlot === null) return
+    setSlots(prev => {
+      const next = prev.map((s, i) => {
+        if (s.memberId === memberId) return { ...s, memberId: null }
+        if (i === activeSlot) return { ...s, memberId: memberId }
+        return s
+      })
+      return next
+    })
+    setActiveSlot(null)
   }
 
   const handleSave = async (publishStatus) => {
@@ -138,8 +166,8 @@ export default function LineupBuilder({
           </div>
 
           <div className="flex flex-col md:flex-row">
-            {/* Left sidebar: Players & Formation */}
-            <div className="md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 p-4 space-y-4 md:max-h-[70vh] md:overflow-y-auto">
+            {/* Left sidebar: Players & Formation (desktop) */}
+            <div className="hidden md:block md:w-64 flex-shrink-0 md:border-r border-gray-100 p-4 space-y-4 md:max-h-[70vh] md:overflow-y-auto">
               {/* Formation picker */}
               {!readOnly && (
                 <div>
@@ -220,6 +248,27 @@ export default function LineupBuilder({
               )}
             </div>
 
+            {/* Mobile Formation Picker */}
+            {!readOnly && (
+              <div className="md:hidden p-3 border-b border-gray-100">
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  {FORMATION_KEYS.map(f => (
+                    <button
+                      key={f}
+                      onClick={() => handleFormationChange(f)}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+                        formation === f
+                          ? 'bg-violet-600 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Soccer Field */}
             <div className="flex-1 p-4">
               <div
@@ -258,6 +307,7 @@ export default function LineupBuilder({
                 {slots.map((slot, i) => {
                   const member = slot.memberId ? getMember(slot.memberId) : null
                   const isEmpty = !member
+                  const isActive = activeSlot === i
 
                   return (
                     <div
@@ -272,16 +322,26 @@ export default function LineupBuilder({
                       onDrop={!readOnly ? () => handleDropOnSlot(i) : undefined}
                     >
                       {/* Jersey circle */}
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-md border-2 transition-all ${
-                          isEmpty
-                            ? 'bg-white/20 border-white/40 text-white/60'
-                            : 'bg-red-600 border-white text-white cursor-pointer'
-                        } ${!readOnly && isEmpty ? 'hover:bg-white/30' : ''}`}
-                        onClick={!readOnly && !isEmpty ? () => handleRemoveFromSlot(i) : undefined}
-                        title={!readOnly && !isEmpty ? `Click to remove ${member.name}` : ''}
-                      >
-                        {member ? (member.jersey_number || member.name.charAt(0)) : '?'}
+                      <div className="relative">
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-md border-2 transition-all ${
+                            isEmpty
+                              ? isActive ? 'bg-white/40 border-white text-white ring-2 ring-white' : 'bg-white/20 border-white/40 text-white/60'
+                              : 'bg-red-600 border-white text-white cursor-pointer'
+                          } ${!readOnly && isEmpty ? 'hover:bg-white/30' : ''}`}
+                          onClick={!readOnly ? () => handleSlotTap(i) : undefined}
+                        >
+                          {member ? (member.jersey_number || member.name.charAt(0)) : '?'}
+                        </div>
+                        {/* X button to remove on mobile */}
+                        {!readOnly && !isEmpty && isActive && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleRemoveFromSlot(i) }}
+                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-md"
+                          >
+                            x
+                          </button>
+                        )}
                       </div>
                       {/* Name label */}
                       <div className="mt-0.5 px-1.5 py-0.5 rounded bg-black/40 text-[9px] font-semibold text-white whitespace-nowrap max-w-[70px] truncate text-center">
@@ -293,6 +353,33 @@ export default function LineupBuilder({
               </div>
             </div>
           </div>
+
+          {/* Mobile Player Picker */}
+          {!readOnly && activeSlot !== null && !slots[activeSlot]?.memberId && (
+            <div className="md:hidden border-t border-gray-100 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-gray-500 uppercase">
+                  Select player for {slots[activeSlot]?.label}
+                </span>
+                <button onClick={() => setActiveSlot(null)} className="text-xs text-gray-400">Cancel</button>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto">
+                {availablePlayers.map(m => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => handleMobileAssign(m.id)}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50 hover:bg-violet-50 transition-colors text-left"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center text-[10px] font-bold text-violet-700 flex-shrink-0">
+                      {m.jersey_number || m.name.charAt(0)}
+                    </div>
+                    <span className="text-xs font-medium text-gray-900 truncate">{m.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Footer */}
           {!readOnly && (
