@@ -67,6 +67,18 @@ export default function EventCard({
   const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id)) : []
 
   const [shownName, setShownName] = useState(null)
+  const [excusePopup, setExcusePopup] = useState(null) // 'maybe' | 'cant' | null
+
+  const COACH_WHATSAPP = 'https://wa.me/19788094516?text=Hey%20Coach%2C%20I%20have%20an%20excuse%20for%20'
+
+  const handleExcuseRsvp = (status) => {
+    setExcusePopup(status)
+  }
+
+  const handleWhatsAppClick = () => {
+    onRsvp(event.id, excusePopup)
+    setExcusePopup(null)
+  }
   const handleAvatarTap = (name) => {
     setShownName(name)
     setTimeout(() => setShownName(null), 3000)
@@ -167,7 +179,7 @@ export default function EventCard({
               onClick={e => {
                 e.preventDefault()
                 e.stopPropagation()
-                onRsvp(event.id, 'maybe')
+                handleExcuseRsvp('maybe')
               }}
               className={`py-2 px-2 rounded-lg font-medium text-sm transition-colors text-center ${
                 myRsvp?.status === 'maybe'
@@ -182,7 +194,7 @@ export default function EventCard({
               onClick={e => {
                 e.preventDefault()
                 e.stopPropagation()
-                onRsvp(event.id, 'cant')
+                handleExcuseRsvp('cant')
               }}
               className={`py-2 px-2 rounded-lg font-medium text-sm transition-colors text-center ${
                 myRsvp?.status === 'cant'
@@ -250,6 +262,39 @@ export default function EventCard({
         <div className="pt-4 border-t border-gray-100">
           <p className="text-sm text-gray-600">{event.notes}</p>
         </div>
+      )}
+
+      {/* Excuse Popup */}
+      {excusePopup && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-50"
+            onClick={e => { e.stopPropagation(); setExcusePopup(null) }}
+          />
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+              <div className="text-4xl">📱</div>
+              <h3 className="text-lg font-bold text-gray-900">Got an excuse?</h3>
+              <p className="text-sm text-gray-500">Text Coach Juan to let him know why you can&apos;t make it.</p>
+              <a
+                href={`${COACH_WHATSAPP}${encodeURIComponent(titleDisplay)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
+                className="block w-full py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors"
+              >
+                Text Coach on WhatsApp
+              </a>
+              <button
+                type="button"
+                onClick={() => setExcusePopup(null)}
+                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

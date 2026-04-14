@@ -32,6 +32,9 @@ export default function EventDetail({
   const [editTeamScore, setEditTeamScore] = useState(event.team_score?.toString() || '')
   const [editOppScore, setEditOppScore] = useState(event.opponent_score?.toString() || '')
   const [saving, setSaving] = useState(false)
+  const [excusePopup, setExcusePopup] = useState(null)
+
+  const COACH_WHATSAPP = 'https://wa.me/19788094516?text=Hey%20Coach%2C%20I%20have%20an%20excuse%20for%20'
 
   // RSVP counts and grouping
   const goingRsvps = rsvps.filter(r => r.status === 'going')
@@ -310,7 +313,7 @@ export default function EventDetail({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onRsvp(event.id, 'maybe')}
+                        onClick={() => setExcusePopup('maybe')}
                         className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
                           myRsvp?.status === 'maybe'
                             ? 'bg-amber-500 text-white'
@@ -321,7 +324,7 @@ export default function EventDetail({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onRsvp(event.id, 'cant')}
+                        onClick={() => setExcusePopup('cant')}
                         className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
                           myRsvp?.status === 'cant'
                             ? 'bg-red-600 text-white'
@@ -509,6 +512,38 @@ export default function EventDetail({
           </div>
         </div>
       </div>
+      {/* Excuse Popup */}
+      {excusePopup && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-[60]"
+            onClick={() => setExcusePopup(null)}
+          />
+          <div className="fixed inset-0 flex items-center justify-center z-[60] p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center space-y-4" onClick={e => e.stopPropagation()}>
+              <div className="text-4xl">📱</div>
+              <h3 className="text-lg font-bold text-gray-900">Got an excuse?</h3>
+              <p className="text-sm text-gray-500">Text Coach Juan to let him know why you can&apos;t make it.</p>
+              <a
+                href={`${COACH_WHATSAPP}${encodeURIComponent(mainTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => { onRsvp(event.id, excusePopup); setExcusePopup(null) }}
+                className="block w-full py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors"
+              >
+                Text Coach on WhatsApp
+              </a>
+              <button
+                type="button"
+                onClick={() => setExcusePopup(null)}
+                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   )
 }
