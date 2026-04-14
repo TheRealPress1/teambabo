@@ -38,15 +38,16 @@ export default function Schedule({
 
   // Parse date string as local time (not UTC)
   const localDate = (d) => new Date(d + 'T00:00:00')
+  const localDateTime = (e) => new Date(e.date + 'T' + (e.time || '00:00') + ':00')
 
   // Partition events into upcoming and past
   const upcomingEvents = events
     .filter(e => localDate(e.date) >= today)
-    .sort((a, b) => localDate(a.date) - localDate(b.date))
+    .sort((a, b) => localDateTime(a) - localDateTime(b))
 
   const pastEvents = events
     .filter(e => localDate(e.date) < today)
-    .sort((a, b) => localDate(b.date) - localDate(a.date))
+    .sort((a, b) => localDateTime(b) - localDateTime(a))
 
   const renderEventCards = (eventList, isPast = false) => {
     if (eventList.length === 0) return null
