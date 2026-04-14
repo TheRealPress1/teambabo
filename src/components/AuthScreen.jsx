@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
 import { POSITIONS } from '../lib/utils'
+import { supabase } from '../lib/supabase'
 
 export default function AuthScreen({ onSignUp, onLogin }) {
-  const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [mode, setMode] = useState('login') // 'login' | 'signup' | 'forgot'
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   // Login fields
@@ -29,6 +31,24 @@ export default function AuthScreen({ onSignUp, onLogin }) {
       reader.onload = (ev) => setAvatarPreview(ev.target.result)
       reader.readAsDataURL(file)
     }
+  }
+
+  const [resetEmail, setResetEmail] = useState('')
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+    setSubmitting(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: window.location.origin,
+    })
+    if (error) {
+      setError(error.message)
+    } else {
+      setSuccess('Password reset email sent! Check your inbox.')
+    }
+    setSubmitting(false)
   }
 
   const handleLogin = async (e) => {
@@ -101,6 +121,12 @@ export default function AuthScreen({ onSignUp, onLogin }) {
           </div>
         )}
 
+        {success && (
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-6">
+            <p className="text-sm text-green-600">{success}</p>
+          </div>
+        )}
+
         {/* Login Form */}
         {mode === 'login' && (
           <form onSubmit={handleLogin} className="space-y-4">
@@ -133,10 +159,44 @@ export default function AuthScreen({ onSignUp, onLogin }) {
             >
               {submitting ? 'Logging in...' : 'Log In'}
             </button>
+            <div className="flex items-center justify-between text-sm">
+              <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess('') }} className="text-violet-600 font-medium hover:underline">
+                Forgot password?
+              </button>
+              <p className="text-gray-400">
+                <button type="button" onClick={() => { setMode('signup'); setError('') }} className="text-violet-600 font-medium hover:underline">
+                  Sign up
+                </button>
+              </p>
+            </div>
+          </form>
+        )}
+
+        {/* Forgot Password Form */}
+        {mode === 'forgot' && (
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <p className="text-sm text-gray-500">Enter your email and we'll send you a link to reset your password.</p>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Email</label>
+              <input
+                type="email"
+                value={resetEmail}
+                onChange={e => setResetEmail(e.target.value)}
+                placeholder="you@email.com"
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 active:scale-[0.98] transition-all shadow-sm disabled:opacity-60"
+            >
+              {submitting ? 'Sending...' : 'Send Reset Link'}
+            </button>
             <p className="text-center text-sm text-gray-400">
-              Don't have an account?{' '}
-              <button type="button" onClick={() => { setMode('signup'); setError('') }} className="text-violet-600 font-medium hover:underline">
-                Sign up
+              <button type="button" onClick={() => { setMode('login'); setError(''); setSuccess('') }} className="text-violet-600 font-medium hover:underline">
+                Back to login
               </button>
             </p>
           </form>
