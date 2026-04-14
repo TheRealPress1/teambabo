@@ -38,7 +38,12 @@ export default function Schedule({
 
   // Parse date string as local time (not UTC)
   const localDate = (d) => new Date(d + 'T00:00:00')
-  const localDateTime = (e) => new Date(e.date + 'T' + (e.time || '00:00') + ':00')
+  const localDateTime = (e) => {
+    const t = e.time || '00:00:00'
+    // Handle both HH:MM and HH:MM:SS formats
+    const time = t.length <= 5 ? t + ':00' : t
+    return new Date(e.date + 'T' + time)
+  }
 
   // Partition events into upcoming and past
   const upcomingEvents = events
