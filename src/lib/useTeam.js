@@ -141,6 +141,22 @@ export function useTeam() {
     await loadAll()
   }
 
+  // Admin: override any player's RSVP
+  const setRsvpForMember = async (eventId, memberId, status) => {
+    const existing = rsvps.find(r => r.event_id === eventId && r.member_id === memberId)
+    if (existing) {
+      await supabase.from('soccer_rsvps').update({ status, updated_at: new Date().toISOString() }).eq('id', existing.id)
+    } else {
+      await supabase.from('soccer_rsvps').insert({ event_id: eventId, member_id: memberId, status })
+    }
+    await loadAll()
+  }
+
+  const updateMemberPhone = async (memberId, phone) => {
+    await supabase.from('soccer_members').update({ phone }).eq('id', memberId)
+    await loadAll()
+  }
+
   const saveResult = async (eventId, teamScore, oppScore, goalsList) => {
     await supabase.from('soccer_events').update({
       team_score: parseInt(teamScore),
@@ -240,7 +256,7 @@ export function useTeam() {
     session,
     hasProfile: !!myMember,
     signUp, login, logout, updateProfile,
-    addEvent, updateEvent, deleteEvent, setRsvp, saveResult, saveLineup, deleteLineup, promoteMember,
+    addEvent, updateEvent, deleteEvent, setRsvp, setRsvpForMember, saveResult, saveLineup, deleteLineup, promoteMember, updateMemberPhone,
     getMemberName: (id) => members.find(m => m.id === id)?.name || '?',
     getMemberEmoji: (id) => members.find(m => m.id === id)?.avatar_emoji || '⚽',
     getMemberAvatar: (id) => {

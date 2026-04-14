@@ -146,6 +146,7 @@ export default function App() {
             onEditLineup={(l) => { setEditingLineup(l); setModal('templateLineup') }}
             rsvps={team.rsvps}
             events={team.events}
+            onUpdateMemberPhone={team.updateMemberPhone}
           />
         )}
         {tab === 'stats' && (
@@ -194,6 +195,7 @@ export default function App() {
           onOutlookCal={() => openOutlookCalendar(selectedEvent)}
           onLineup={handleLineup}
           lineup={team.getEventLineup(selectedEvent.id)}
+          onSetRsvpForMember={team.setRsvpForMember}
         />
       )}
 
