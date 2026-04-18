@@ -159,20 +159,25 @@ export function useTeam() {
   }
 
   const saveResult = async (eventId, teamScore, oppScore, goalsList) => {
-    await supabase.from('soccer_events').update({
+    const { error: updateError } = await supabase.from('soccer_events').update({
       team_score: parseInt(teamScore),
       opponent_score: parseInt(oppScore),
     }).eq('id', eventId)
-    await supabase.from('soccer_goals').delete().eq('event_id', eventId)
+    if (updateError) console.error('Failed to update score:', updateError)
+
+    const { error: deleteError } = await supabase.from('soccer_goals').delete().eq('event_id', eventId)
+    if (deleteError) console.error('Failed to delete goals:', deleteError)
+
     if (goalsList.length > 0) {
-      await supabase.from('soccer_goals').insert(
+      const { error: insertError } = await supabase.from('soccer_goals').insert(
         goalsList.map(g => ({
           event_id: eventId,
           scorer_id: g.scorer,
           assist_id: g.assist || null,
-          minute: g.minute || null,
+          minute: g.minute ? parseInt(g.minute) : null,
         }))
       )
+      if (insertError) console.error('Failed to insert goals:', insertError)
     }
     await loadAll()
   }

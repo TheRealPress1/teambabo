@@ -29,7 +29,7 @@ export default function AddResult({ event, members, existingGoals, onSubmit, onC
     e.preventDefault();
     const validGoals = goals
       .filter((g) => g.scorer)
-      .map((g) => ({ scorer: g.scorer, assist: g.assist || null, minute: g.minute || null }));
+      .map((g) => ({ scorer: g.scorer, assist: g.assist || null, minute: g.minute ? parseInt(g.minute) : null }));
     onSubmit(event.id, parseInt(teamScore) || 0, parseInt(oppScore) || 0, validGoals);
   };
 
