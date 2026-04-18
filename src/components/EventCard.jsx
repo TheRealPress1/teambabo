@@ -35,14 +35,16 @@ export default function EventCard({
 
   const typeBg = typeBadgeStyles[event.type] || typeBadgeStyles.Other
 
-  // RSVP counts
-  const goingCount = rsvps.filter(r => r.status === 'going').length
-  const maybeCount = rsvps.filter(r => r.status === 'maybe').length
-  const cantCount = rsvps.filter(r => r.status === 'cant').length
+  // RSVP counts — exclude admins (coaches)
+  const adminIds = new Set(members.filter(m => m.role === 'admin').map(m => m.id))
+  const playerRsvps = rsvps.filter(r => !adminIds.has(r.member_id))
+  const goingCount = playerRsvps.filter(r => r.status === 'going').length
+  const maybeCount = playerRsvps.filter(r => r.status === 'maybe').length
+  const cantCount = playerRsvps.filter(r => r.status === 'cant').length
 
-  // Determine result display for games
+  // Determine result display for games (show if score exists, even on same day)
   let resultDisplay = null
-  if (isPast && event.type?.toLowerCase() === 'game' && event.team_score !== null && event.opponent_score !== null) {
+  if (event.type?.toLowerCase() === 'game' && event.team_score !== null && event.opponent_score !== null) {
     const teamScore = event.team_score
     const opponentScore = event.opponent_score
     let resultColor = 'text-amber-600' // draw
@@ -63,9 +65,9 @@ export default function EventCard({
     titleDisplay = `${prefix} ${event.opponent}`
   }
 
-  // Members who haven't responded
+  // Members who haven't responded — exclude admins (coaches)
   const respondedIds = new Set(rsvps.map(r => r.member_id))
-  const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id)) : []
+  const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id) && m.role !== 'admin') : []
 
   const [shownName, setShownName] = useState(null)
   const [excusePopup, setExcusePopup] = useState(null) // 'maybe' | 'cant' | null
@@ -111,12 +113,12 @@ export default function EventCard({
             {daysLabel}
           </span>
         )}
-        {resultDisplay && <div>{resultDisplay}</div>}
       </div>
 
-      {/* Title */}
-      <div>
+      {/* Title + Score */}
+      <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-gray-900">{titleDisplay}</h3>
+        {resultDisplay && <div>{resultDisplay}</div>}
       </div>
 
       {/* Date, Time, Location */}
