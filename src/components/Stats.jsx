@@ -7,11 +7,14 @@ export default function Stats({ events = [], goals = [], rsvps = [], members = [
   const localDate = (d) => new Date(d + 'T00:00:00')
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+  const hasScore = (g) => g.team_score !== null && g.opponent_score !== null
+  // Upcoming: no score AND date >= today
   const upcomingGames = games
-    .filter(g => localDate(g.date) >= today)
+    .filter(g => !hasScore(g) && localDate(g.date) >= today)
     .sort((a, b) => localDate(a.date) - localDate(b.date))
+  // Results: has score OR date is in the past
   const pastGames = games
-    .filter(g => localDate(g.date) < today)
+    .filter(g => hasScore(g) || localDate(g.date) < today)
     .sort((a, b) => localDate(a.date) - localDate(b.date))
 
   // Season Record
