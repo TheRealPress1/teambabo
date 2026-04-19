@@ -35,9 +35,9 @@ export default function EventCard({
 
   const typeBg = typeBadgeStyles[event.type] || typeBadgeStyles.Other
 
-  // RSVP counts — exclude admins (coaches)
-  const adminIds = new Set(members.filter(m => m.role === 'admin').map(m => m.id))
-  const playerRsvps = rsvps.filter(r => !adminIds.has(r.member_id))
+  // RSVP counts — exclude coaches
+  const coachIds = new Set(members.filter(m => m.role === 'coach').map(m => m.id))
+  const playerRsvps = rsvps.filter(r => !coachIds.has(r.member_id))
   const goingCount = playerRsvps.filter(r => r.status === 'going').length
   const maybeCount = playerRsvps.filter(r => r.status === 'maybe').length
   const cantCount = playerRsvps.filter(r => r.status === 'cant').length
@@ -65,9 +65,9 @@ export default function EventCard({
     titleDisplay = `${prefix} ${event.opponent}`
   }
 
-  // Members who haven't responded — exclude admins (coaches)
+  // Members who haven't responded — exclude coaches
   const respondedIds = new Set(rsvps.map(r => r.member_id))
-  const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id) && m.role !== 'admin') : []
+  const notResponded = !isPast ? members.filter(m => !respondedIds.has(m.id) && m.role !== 'coach') : []
 
   const [shownName, setShownName] = useState(null)
   const [excusePopup, setExcusePopup] = useState(null) // 'maybe' | 'cant' | null
