@@ -252,7 +252,7 @@ export function useTeam() {
     await loadAll()
   }
 
-  const isAdmin = myMember?.role === 'admin'
+  const isAdmin = myMember?.role === 'admin' || myMember?.role === 'coach'
   const me = myMember?.id || null
 
   return {

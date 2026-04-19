@@ -1,5 +1,6 @@
 export default function Roster({ members = [], me, isAdmin = false, onPromote, templateLineups = [], onCreateLineup, onEditLineup, rsvps = [], events = [] }) {
-  const coaches = members.filter((m) => m.role === 'admin');
+  const coaches = members.filter((m) => m.role === 'coach');
+  const admins = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
   // Attendance: only count events from 2026-04-13 onwards. No RSVP = not attended.
@@ -16,7 +17,7 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
 
   const MemberRow = ({ member }) => {
     const isMe = member.id === me;
-    const memberIsAdmin = member.role === 'admin';
+    const memberIsAdmin = member.role === 'admin' || member.role === 'coach';
     const attendance = getAttendance(member.id);
 
     return (
@@ -36,9 +37,14 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
             <div className="flex items-center gap-2">
               <span className="font-semibold text-stone-900">{member.name}</span>
               {isMe && <span className="text-xs text-stone-500">(you)</span>}
-              {memberIsAdmin && (
+              {member.role === 'admin' && (
                 <span className="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full font-medium">
                   Admin
+                </span>
+              )}
+              {member.role === 'coach' && (
+                <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
+                  Coach
                 </span>
               )}
             </div>
@@ -102,16 +108,32 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
         </div>
       </div>
 
-      {/* Coaches & Admins Section */}
+      {/* Coaches Section */}
       {coaches.length > 0 && (
         <div>
           <div className="px-4 pt-4 pb-2">
             <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
-              Coaches & Admins
+              Coaches
             </h3>
           </div>
           <div>
             {coaches.map((member) => (
+              <MemberRow key={member.id} member={member} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Admins Section */}
+      {admins.length > 0 && (
+        <div>
+          <div className="px-4 pt-4 pb-2">
+            <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
+              Admins
+            </h3>
+          </div>
+          <div>
+            {admins.map((member) => (
               <MemberRow key={member.id} member={member} />
             ))}
           </div>
