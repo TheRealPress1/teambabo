@@ -49,10 +49,14 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, t
               )}
             </div>
             <div className="flex items-center gap-2 text-sm text-stone-600">
-              <span>#{member.jersey_number}</span>
-              <span className="text-xs px-2 py-0.5 bg-stone-100 text-stone-700 rounded">
-                {member.position}
-              </span>
+              {member.role !== 'coach' && (
+                <>
+                  <span>#{member.jersey_number}</span>
+                  <span className="text-xs px-2 py-0.5 bg-stone-100 text-stone-700 rounded">
+                    {member.position}
+                  </span>
+                </>
+              )}
               {isAdmin && member.phone && (
                 <a
                   href={`https://wa.me/${member.phone.replace(/\D/g, '')}`}
