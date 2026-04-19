@@ -231,6 +231,11 @@ export function useTeam() {
     await loadAll()
   }
 
+  const removeMember = async (memberId) => {
+    await supabase.from('soccer_members').delete().eq('id', memberId)
+    await loadAll()
+  }
+
   const updateProfile = async ({ name, jerseyNumber, position, emoji, avatarFile }) => {
     if (!myMember) return
     const updates = {
@@ -262,7 +267,7 @@ export function useTeam() {
     session,
     hasProfile: !!myMember,
     signUp, login, logout, updateProfile,
-    addEvent, updateEvent, deleteEvent, setRsvp, setRsvpForMember, saveResult, saveLineup, deleteLineup, promoteMember, updateMemberPhone,
+    addEvent, updateEvent, deleteEvent, setRsvp, setRsvpForMember, saveResult, saveLineup, deleteLineup, promoteMember, removeMember, updateMemberPhone,
     getMemberName: (id) => members.find(m => m.id === id)?.name || '?',
     getMemberEmoji: (id) => members.find(m => m.id === id)?.avatar_emoji || '⚽',
     getMemberAvatar: (id) => {

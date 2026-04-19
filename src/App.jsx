@@ -141,6 +141,7 @@ export default function App() {
             me={team.me}
             isAdmin={team.isAdmin}
             onPromote={team.promoteMember}
+            onRemove={team.removeMember}
             templateLineups={team.getTemplateLineups()}
             onCreateLineup={() => { setEditingLineup(null); setModal('templateLineup') }}
             onEditLineup={(l) => { setEditingLineup(l); setModal('templateLineup') }}
