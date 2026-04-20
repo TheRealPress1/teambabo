@@ -1,10 +1,26 @@
 import { useState } from 'react'
 
+const POSITION_ORDER = {
+  'GK': 0,
+  'CB': 1, 'LB': 2, 'RB': 3, 'LWB': 4, 'RWB': 5,
+  'CDM': 6, 'CM': 7, 'CAM': 8, 'LM': 9, 'RM': 10,
+  'LW': 11, 'RW': 12, 'CF': 13, 'ST': 14,
+}
+
+const POSITION_GROUPS = [
+  { label: 'Goalkeepers', positions: ['GK'] },
+  { label: 'Defenders', positions: ['CB', 'LB', 'RB', 'LWB', 'RWB'] },
+  { label: 'Midfielders', positions: ['CDM', 'CM', 'CAM', 'LM', 'RM'] },
+  { label: 'Forwards', positions: ['LW', 'RW', 'CF', 'ST'] },
+]
+
 export default function Roster({ members = [], me, isAdmin = false, onPromote, onRemove, templateLineups = [], onCreateLineup, onEditLineup, rsvps = [], events = [] }) {
   const [selectedMember, setSelectedMember] = useState(null)
   const [confirmRemove, setConfirmRemove] = useState(false)
+  const [sortView, setSortView] = useState('default') // 'default' | 'attendance' | 'position'
 
   const coaches = members.filter((m) => m.role === 'coach');
+  const nonCoaches = members.filter((m) => m.role !== 'coach');
   const admins = members.filter((m) => m.role === 'admin');
   const players = members.filter((m) => m.role === 'player');
 
@@ -109,11 +125,36 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, o
               {members.length}
             </span>
           </div>
-          <span className="text-xs text-stone-400 font-medium">Attendance Record</span>
+          <div className="flex bg-stone-200 rounded-lg p-0.5">
+            <button
+              onClick={() => setSortView('default')}
+              className={`px-2 py-1 text-[10px] font-medium rounded-md transition-colors ${
+                sortView === 'default' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500'
+              }`}
+            >
+              Default
+            </button>
+            <button
+              onClick={() => setSortView('attendance')}
+              className={`px-2 py-1 text-[10px] font-medium rounded-md transition-colors ${
+                sortView === 'attendance' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500'
+              }`}
+            >
+              Attendance
+            </button>
+            <button
+              onClick={() => setSortView('position')}
+              className={`px-2 py-1 text-[10px] font-medium rounded-md transition-colors ${
+                sortView === 'position' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500'
+              }`}
+            >
+              Position
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Coaches Section */}
+      {/* Coaches always at top */}
       {coaches.length > 0 && (
         <div>
           <div className="px-4 pt-4 pb-2">
@@ -129,36 +170,104 @@ export default function Roster({ members = [], me, isAdmin = false, onPromote, o
         </div>
       )}
 
-      {/* Admins Section */}
-      {admins.length > 0 && (
+      {/* Default View: Admins then Players */}
+      {sortView === 'default' && (
+        <>
+          {admins.length > 0 && (
+            <div>
+              <div className="px-4 pt-4 pb-2">
+                <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
+                  Admins
+                </h3>
+              </div>
+              <div>
+                {admins.map((member) => (
+                  <MemberRow key={member.id} member={member} />
+                ))}
+              </div>
+            </div>
+          )}
+          {players.length > 0 && (
+            <div>
+              <div className="px-4 pt-4 pb-2">
+                <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
+                  Players
+                </h3>
+              </div>
+              <div>
+                {players.map((member) => (
+                  <MemberRow key={member.id} member={member} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Attendance View: all non-coaches sorted best to worst */}
+      {sortView === 'attendance' && (
         <div>
           <div className="px-4 pt-4 pb-2">
             <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
-              Admins
+              By Attendance
             </h3>
           </div>
           <div>
-            {admins.map((member) => (
-              <MemberRow key={member.id} member={member} />
-            ))}
+            {[...nonCoaches]
+              .sort((a, b) => (getAttendance(b.id) ?? -1) - (getAttendance(a.id) ?? -1))
+              .map((member) => (
+                <MemberRow key={member.id} member={member} />
+              ))}
           </div>
         </div>
       )}
 
-      {/* Players Section */}
-      {players.length > 0 && (
-        <div>
-          <div className="px-4 pt-4 pb-2">
-            <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
-              Players
-            </h3>
-          </div>
-          <div>
-            {players.map((member) => (
-              <MemberRow key={member.id} member={member} />
-            ))}
-          </div>
-        </div>
+      {/* Position View: GK → DEF → MID → ATK */}
+      {sortView === 'position' && (
+        <>
+          {POSITION_GROUPS.map(group => {
+            const groupMembers = nonCoaches.filter(m =>
+              group.positions.includes(m.position)
+            )
+            if (groupMembers.length === 0) return null
+            return (
+              <div key={group.label}>
+                <div className="px-4 pt-4 pb-2">
+                  <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
+                    {group.label}
+                  </h3>
+                </div>
+                <div>
+                  {groupMembers
+                    .sort((a, b) => (POSITION_ORDER[a.position] ?? 99) - (POSITION_ORDER[b.position] ?? 99))
+                    .map((member) => (
+                      <MemberRow key={member.id} member={member} />
+                    ))}
+                </div>
+              </div>
+            )
+          })}
+          {/* Unassigned position */}
+          {(() => {
+            const allPositions = POSITION_GROUPS.flatMap(g => g.positions)
+            const unassigned = nonCoaches.filter(m => !allPositions.includes(m.position))
+            if (unassigned.length === 0) return null
+            return (
+              <div>
+                <div className="px-4 pt-4 pb-2">
+                  <h3 className="text-sm font-semibold text-stone-700 uppercase tracking-wide">
+                    Other
+                  </h3>
+                </div>
+                <div>
+                  {unassigned.map((member) => (
+                    <MemberRow key={member.id} member={member} />
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+        </>
       )}
 
       {/* Empty State */}
