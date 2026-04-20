@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { POSITIONS } from '../lib/utils'
 import { supabase } from '../lib/supabase'
 
-export default function AuthScreen({ onSignUp, onLogin }) {
+export default function AuthScreen({ onSignUp, onLogin, onBack }) {
   const [mode, setMode] = useState('login') // 'login' | 'signup' | 'forgot'
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -94,6 +94,11 @@ export default function AuthScreen({ onSignUp, onLogin }) {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-10">
+          {onBack && (
+            <button onClick={onBack} className="text-sm text-violet-600 font-medium hover:underline mb-4 inline-block">
+              &larr; Back to TeamBabo
+            </button>
+          )}
           <div className="flex items-center justify-center gap-3 mb-2">
             <h1 className="text-4xl font-bold text-gray-900">Babson Club Soccer</h1>
           </div>
