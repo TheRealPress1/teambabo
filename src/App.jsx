@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTeam } from './lib/useTeam'
 import { isPast, isToday, openGoogleCalendar, openOutlookCalendar } from './lib/utils'
+import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
 import Schedule from './components/Schedule'
 import Roster from './components/Roster'
@@ -23,6 +24,7 @@ export default function App() {
   const [modal, setModal] = useState(null)
   const [selectedEventId, setSelectedEventId] = useState(null)
   const [editingLineup, setEditingLineup] = useState(null)
+  const [showAuth, setShowAuth] = useState(false)
 
   if (team.loading) {
     return (
@@ -36,10 +38,14 @@ export default function App() {
   }
 
   if (!team.session || !team.hasProfile) {
+    if (!showAuth) {
+      return <LandingPage onGetStarted={() => setShowAuth(true)} />
+    }
     return (
       <AuthScreen
         onSignUp={team.signUp}
         onLogin={team.login}
+        onBack={() => setShowAuth(false)}
       />
     )
   }
